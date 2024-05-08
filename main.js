@@ -363,7 +363,7 @@ import './style.css';
   setFormPlaceholders();
 
   renderSVG();
-  setTimeout(() => createSVG(), 30);
+  setTimeout(() => createSVG(), 40);
 
   document.getElementById("LyricCard").contentEditable = true;
 
