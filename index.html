@@ -6,12 +6,13 @@
     <!-- Copied from google fonts in order to use one of their fonts -->  
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel='preload' as='style' href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Varela+Round&display=swap">
+    <link rel='stylesheet' href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Varela+Round&display=swap">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
   </head>
   <body>
     <div id="app" class="container">
-      <h1></h1>
       <button class="accordion"> <i class="far fa-save"></i> File</button>
       <div class="panel">
         <form id="save-form">
@@ -263,6 +264,10 @@
             </label>
           </fieldset>
         </form>
+      </div>
+    </div>
+    <div id="svg-container" contenteditable="true">
+      <svg id="LyricCard"></svg>
     </div>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/snap.svg/0.2.0/snap.svg-min.js"></script>

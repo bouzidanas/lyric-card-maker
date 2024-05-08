@@ -361,7 +361,11 @@ import './style.css';
 
   //Initial run
   setFormPlaceholders();
+
   renderSVG();
+  setTimeout(() => createSVG(), 30);
+
+  document.getElementById("LyricCard").contentEditable = true;
 
   //----------------------------------------------------------------------------
   //Function definitions
@@ -522,12 +526,14 @@ import './style.css';
   //The following function Constructs the SVG
   function renderSVG(){
       //Create empty SVG element
-      var canvas = Snap(width, height);
-      canvas.attr({id: "LyricCard"});
+      var canvas = Snap("#LyricCard");
+      canvas.attr({id: "LyricCard", width: width, height: height});
+      // var canvas = Snap(width, height);
+      // canvas.attr({id: "LyricCard"});
 
-      //Adding nice google fonts for later use
-      var frag = Snap.parse('<style>@import url("https://fonts.googleapis.com/css2?family=Varela+Round");@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900");</style>')
-      canvas.append( frag )
+      // //Adding nice google fonts for later use
+      // var frag = Snap.parse('<style>@import url("https://fonts.googleapis.com/css2?family=Varela+Round");@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900");</style>')
+      // canvas.append( frag )
 
       //Setting up blur and shadow effects
       var blurFilter = canvas.filter(Snap.filter.blur(blurAmount, blurAmount));
@@ -630,7 +636,11 @@ import './style.css';
   function createSVG(){
       //First remove current SVG (and other elements previously generated) that is to be replaced
       let svgElement = document.getElementsByTagName("svg")[0];
-      svgElement.remove();
+      // empty contents of svgElement
+      svgElement.innerHTML = '';
+
+      // // remove svgElement
+      // svgElement.remove();
 
       //let bufspace = document.getElementsByClassName("end-buffer-space")[0];
       //bufspace.remove();
