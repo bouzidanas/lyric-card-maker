@@ -9,266 +9,289 @@
     <link rel='preload' as='style' href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Varela+Round&display=swap">
     <link rel='stylesheet' href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Varela+Round&display=swap">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+    <title>lyric-card-maker</title>
+    <style>
+      .hidden {
+        opacity: 0;
+      }
+  
+      .visible {
+        opacity: 1;
+        transition: opacity 0.5s ease-out;
+      }
+    </style>
   </head>
-  <body>
-    <div id="app" class="container">
-      <button class="accordion"> <i class="far fa-save"></i> File</button>
-      <div class="panel">
-        <form id="save-form">
-          <label class="fullinputwbutton">Width :<input name="svg-width" type="number">  Height :<input name="svg-height" type="number">
-          </label>
-          <fieldset>
-            <legend>Load settings</legend>
-            <input name="load-settings-filename" type="file" accept=".csv" class="fullinput">
-          </fieldset>
-          </br>
-          <fieldset>
-            <legend>Download settings</legend>
-            <input name="save-settings-filename" class="fullinputwbutton">
-            <button type="button" class="setting" id="save-settings"><i class="fas fa-file-csv"></i></button>
-          </fieldset>
-          </br>
-          <fieldset>
-            <legend>Download SVG</legend>
-            <input name="save-filename" class="fullinputwbutton">
-            <button type="button" class="setting" id="save-svg"><i class="fas fa-file-download"></i></button>
-          </fieldset>
-        </form>
+  <body class="hidden">
+    <header>
+      <a class="app-name" href="https://vitejs.dev" target="_blank" rel="noopener noreferrer">
+        <img width="32" height="32" src="/icons8-term-64.png" alt="term"/>
+        <h1>lyric-card-maker</h1>
+      </a>
+      <div class="header-end">
+        <a href="https://github.com/bouzidanas/lyric-card-maker" target="_blank" rel="noopener noreferrer">
+          <i class="fab fa-github"></i>
+        </a>
       </div>
+    </header>
+    <main>
+      <div id="app" class="container">
+        <button class="accordion"> <i class="far fa-save"></i> File</button>
+        <div class="panel">
+          <form id="save-form">
+            <label class="fullinputwbutton">Width :<input name="svg-width" type="number">  Height :<input name="svg-height" type="number">
+            </label>
+            <fieldset>
+              <legend>Load settings</legend>
+              <input name="load-settings-filename" type="file" accept=".csv" class="fullinput">
+            </fieldset>
+            </br>
+            <fieldset>
+              <legend>Download settings</legend>
+              <input name="save-settings-filename" class="fullinputwbutton">
+              <button type="button" class="setting" id="save-settings"><i class="fas fa-file-csv"></i></button>
+            </fieldset>
+            </br>
+            <fieldset>
+              <legend>Download SVG</legend>
+              <input name="save-filename" class="fullinputwbutton">
+              <button type="button" class="setting" id="save-svg"><i class="fas fa-file-download"></i></button>
+            </fieldset>
+          </form>
+        </div>
 
-      <button class="accordion"> <i class="far fa-image"></i> Background</button>
-      <div class="panel">
-        <form id="background-form">
-          <fieldset>
-            <legend>Image URL</legend>
-            <input name="image-url" class="fullinput">
-          </fieldset>
-          </br>
-          <label>X position :
-            <input name="image-position-X" type="number">
-          </label>
-          <button type="button" class="setting" id="image-center-X"><i class="fas fa-align-center"></i></button>
-          </br>
-          <label>Y position :
-            <input name="image-position-Y" type="number">
-          </label>
-          <button type="button" class="setting" id="image-center-Y"><i class="fas fa-align-center"></i></button>
-          </br>
-          <label>Width :
-            <input name="image-width" type="number">
-          </label>
-          <button type="button" class="setting" id="image-height-to-ratio"><i class="fas fa-arrows-v"></i></button>
-          </br>
-          <label>Height :
-            <input name="image-height" type="number">
-          </label>
-          <button type="button" class="setting" id="image-width-to-ratio"><i class="fas fa-arrows-h"></i></button>
-        </form>
-      </div>
+        <button class="accordion"> <i class="far fa-image"></i> Background</button>
+        <div class="panel">
+          <form id="background-form">
+            <fieldset>
+              <legend>Image URL</legend>
+              <input name="image-url" class="fullinput">
+            </fieldset>
+            </br>
+            <label>X position :
+              <input name="image-position-X" type="number">
+            </label>
+            <button type="button" class="setting" id="image-center-X"><i class="fas fa-align-center"></i></button>
+            </br>
+            <label>Y position :
+              <input name="image-position-Y" type="number">
+            </label>
+            <button type="button" class="setting" id="image-center-Y"><i class="fas fa-align-center"></i></button>
+            </br>
+            <label>Width :
+              <input name="image-width" type="number">
+            </label>
+            <button type="button" class="setting" id="image-height-to-ratio"><i class="fas fa-arrows-v"></i></button>
+            </br>
+            <label>Height :
+              <input name="image-height" type="number">
+            </label>
+            <button type="button" class="setting" id="image-width-to-ratio"><i class="fas fa-arrows-h"></i></button>
+          </form>
+        </div>
 
-      <button class="accordion"> <i class="fas fa-align-left"></i> Quote</button>
-      <div class="panel">
-        <form id="quote-form">
-          <fieldset id="lines-fieldset">
-            <legend>Quote text</legend>
-            <textarea name="lines" class="fullinput" rows="8" cols="30"></textarea>
-          </fieldset>
-          </br>
-          <label>X position :
-            <input name="quote-position-X" type="number">
-          </label>
-          </br>
-          <label>Y position :
-            <input name="quote-position-Y" type="number">
-          </label>
-          </br>
-          <label>Line separation :
-            <input name="line-separation" type="number">
-          </label>
-          </br>
-          <label>Line color :
-            <input name="quote-color">
-          </label>
-          <button type="button" class="setting" id="quote-color-picker"><i class="fas fa-eye-dropper"></i></button>
-        </form>
-      </div>
-
-      <button class="accordion"> <i class="fas fa-edit"></i> Text</button>
-      <div class="panel">
-        <form id="text-form">
-          <label>Font Color :
-            <input name="font-color">
-          </label>
-          <button type="button" class="setting" id="font-color-picker"><i class="fas fa-eye-dropper"></i></button>
-          </br>
-          <label>Font family :
-            <input name="font-family">
-          </label>
-          </br>
-          <label>Font size :
-            <input name="font-size" type="number">
-          </label>
-        </form>
-      </div>
-
-      <button class="accordion"> <i class="far fa-copyright"></i>Footer</button>
-      <div class="panel">
-        <form id="footer-form">
-          <fieldset>
-            <legend>Footer text</legend>
-            <input name="footer-text" class="fullinput">
-          </fieldset>
-          </br>
-          <label>Distance from floor :
-            <input name="info-padding" type="number">
-          </label>
-          </br>
-          <label>Font size :
-            <input name="info-size" type="number">
-          </label>
-        </form>
-      </div>
-
-      <button class="accordion"> <i class="fas fa-wrench"></i>Advanced</button>
-      <div class="panel">
-        <form id="advanced-form">
-          <fieldset>
-            <legend>Quote glyph</legend>
-            <label>X position shift :
-              <input name="glyph-shift-X" type="number">
+        <button class="accordion"> <i class="fas fa-align-left"></i> Quote</button>
+        <div class="panel">
+          <form id="quote-form">
+            <fieldset id="lines-fieldset">
+              <legend>Quote text</legend>
+              <textarea name="lines" class="fullinput" rows="8" cols="30"></textarea>
+            </fieldset>
+            </br>
+            <label>X position :
+              <input name="quote-position-X" type="number">
             </label>
             </br>
-            <label>Y position shift :
-              <input name="glyph-shift-Y" type="number">
+            <label>Y position :
+              <input name="quote-position-Y" type="number">
             </label>
             </br>
-            <label>Size :
-              <input name="glyph-size" type="number">
+            <label>Line separation :
+              <input name="line-separation" type="number">
             </label>
             </br>
-            <label>Color :
-              <input name="glyph-color">
+            <label>Line color :
+              <input name="quote-color">
             </label>
-            <button type="button" class="setting" id="glyph-color-picker"><i class="fas fa-eye-dropper"></i></button>
+            <button type="button" class="setting" id="quote-color-picker"><i class="fas fa-eye-dropper"></i></button>
+          </form>
+        </div>
+
+        <button class="accordion"> <i class="fas fa-edit"></i> Text</button>
+        <div class="panel">
+          <form id="text-form">
+            <label>Font Color :
+              <input name="font-color">
+            </label>
+            <button type="button" class="setting" id="font-color-picker"><i class="fas fa-eye-dropper"></i></button>
             </br>
             <label>Font family :
-              <input name="glyph-font-family">
-            </label>
-          </fieldset>
-          <fieldset>
-            <legend>Background</legend>
-            <label>Color :
-              <input name="background-color" >
-            </label>
-            <button type="button" class="setting" id="background-color-picker"><i class="fas fa-eye-dropper"></i></button>
-            </br>
-            <label>Mask color :
-              <input name="mask-color" >
-            </label>
-            <button type="button" class="setting" id="mask-color-picker"><i class="fas fa-eye-dropper"></i></button>
-            </br>
-            <label>Mask opacity :
-              <input name="mask-opacity" type="number">
+              <input name="font-family">
             </label>
             </br>
-            <label>Shadow effect :
-              <input name="image-shadow-effect" type="checkbox">
+            <label>Font size :
+              <input name="font-size" type="number">
+            </label>
+          </form>
+        </div>
+
+        <button class="accordion"> <i class="far fa-copyright"></i>Footer</button>
+        <div class="panel">
+          <form id="footer-form">
+            <fieldset>
+              <legend>Footer text</legend>
+              <input name="footer-text" class="fullinput">
+            </fieldset>
+            </br>
+            <label>Distance from floor :
+              <input name="info-padding" type="number">
             </label>
             </br>
-            <label class="image-shadow">Shadow blur amount :
-              <input name="image-shadow-blur-amount" class="image-shadow" type="number">
+            <label>Font size :
+              <input name="info-size" type="number">
             </label>
-            <label class="image-shadow">Shadow X shift :
-              <input name="image-shadow-shift-X" class="image-shadow" type="number">
-            </label>
-            </br>
-            <label class="image-shadow">Shadow Y shift :
-              <input name="image-shadow-shift-Y" class="image-shadow" type="number">
-            </label>
-            </br>
-            <label class="image-shadow">Shadow color :
-              <input name="image-shadow-color" class="image-shadow" >
-            </label>
-            <button type="button" class="setting" id="image-shadow-color-picker"><i class="fas fa-eye-dropper"></i></button>
-            </br>
-            <label>Blur effect 1 :
-              <input name="blurred-back-effect" type="checkbox">
-            </label>
-            </br>
-            <label>Blur effect 2 :
-              <input name="blurred-back-clone-effect" type="checkbox">
-            </label>
-            </br>
-            <label class="image-blur">Blur amount :
-              <input name="blur-amount" class="image-blur" type="number">
-            </label>
-          </fieldset>
-          <fieldset>
-            <legend>Quote</legend>
-            <label>Horizontal padding :
-              <input name="line-padding-X" type="number">
-            </label>
-            </br>
-            <label>Vertical padding :
-              <input name="line-padding-Y" type="number">
-            </label>
-            </br>
-            <label>Line opacity :
-              <input name="quote-box-opacity">
-            </label>
-            </br>
-            <label>Shadow effect :
-              <input name="quote-shadow-effect" type="checkbox">
-            </label>
-            </br>
-            <label class="quote-shadow">Shadow blur amount :
-              <input name="quote-shadow-blur-amount" class="quote-shadow" type="number">
-            </label>
-            <label class="quote-shadow">Shadow X shift :
-              <input name="quote-shadow-shift-X" class="quote-shadow" type="number">
-            </label>
-            </br>
-            <label class="quote-shadow">Shadow Y shift :
-              <input name="quote-shadow-shift-Y" class="quote-shadow" type="number">
-            </label>
-            </br>
-            <label class="quote-shadow">Shadow color :
-              <input name="quote-shadow-color" class="quote-shadow">
-            </label>
-            <button type="button" class="setting" id="quote-shadow-color-picker"><i class="fas fa-eye-dropper"></i></button>
-          </fieldset>
-          <fieldset>
-            <legend>Text</legend>
-            <label>Text weight :
-              <input name="font-weight" type="number">
-            </label>
-          </fieldset>
-          <fieldset>
-            <legend>Footer</legend>
-            <label>X position shift :
-              <input name="footer-shift-X" type="number">
-            </label>
-            </br>
-            <label>Font color :
-              <input name="footer-color">
-            </label>
-            <button type="button" class="setting" id="footer-color-picker"><i class="fas fa-eye-dropper"></i></button>
-            </br>
-            <label>Font family :
-              <input name="footer-font-family">
-            </label>
-            </br>
-            <label>Font weight :
-              <input name="info-weight" type="number">
-            </label>
-          </fieldset>
-        </form>
+          </form>
+        </div>
+
+        <button class="accordion"> <i class="fas fa-wrench"></i>Advanced</button>
+        <div class="panel">
+          <form id="advanced-form">
+            <fieldset>
+              <legend>Quote glyph</legend>
+              <label>X position shift :
+                <input name="glyph-shift-X" type="number">
+              </label>
+              </br>
+              <label>Y position shift :
+                <input name="glyph-shift-Y" type="number">
+              </label>
+              </br>
+              <label>Size :
+                <input name="glyph-size" type="number">
+              </label>
+              </br>
+              <label>Color :
+                <input name="glyph-color">
+              </label>
+              <button type="button" class="setting" id="glyph-color-picker"><i class="fas fa-eye-dropper"></i></button>
+              </br>
+              <label>Font family :
+                <input name="glyph-font-family">
+              </label>
+            </fieldset>
+            <fieldset>
+              <legend>Background</legend>
+              <label>Color :
+                <input name="background-color" >
+              </label>
+              <button type="button" class="setting" id="background-color-picker"><i class="fas fa-eye-dropper"></i></button>
+              </br>
+              <label>Mask color :
+                <input name="mask-color" >
+              </label>
+              <button type="button" class="setting" id="mask-color-picker"><i class="fas fa-eye-dropper"></i></button>
+              </br>
+              <label>Mask opacity :
+                <input name="mask-opacity" type="number">
+              </label>
+              </br>
+              <label>Shadow effect :
+                <input name="image-shadow-effect" type="checkbox">
+              </label>
+              </br>
+              <label class="image-shadow">Shadow blur amount :
+                <input name="image-shadow-blur-amount" class="image-shadow" type="number">
+              </label>
+              <label class="image-shadow">Shadow X shift :
+                <input name="image-shadow-shift-X" class="image-shadow" type="number">
+              </label>
+              </br>
+              <label class="image-shadow">Shadow Y shift :
+                <input name="image-shadow-shift-Y" class="image-shadow" type="number">
+              </label>
+              </br>
+              <label class="image-shadow">Shadow color :
+                <input name="image-shadow-color" class="image-shadow" >
+              </label>
+              <button type="button" class="setting" id="image-shadow-color-picker"><i class="fas fa-eye-dropper"></i></button>
+              </br>
+              <label>Blur effect 1 :
+                <input name="blurred-back-effect" type="checkbox">
+              </label>
+              </br>
+              <label>Blur effect 2 :
+                <input name="blurred-back-clone-effect" type="checkbox">
+              </label>
+              </br>
+              <label class="image-blur">Blur amount :
+                <input name="blur-amount" class="image-blur" type="number">
+              </label>
+            </fieldset>
+            <fieldset>
+              <legend>Quote</legend>
+              <label>Horizontal padding :
+                <input name="line-padding-X" type="number">
+              </label>
+              </br>
+              <label>Vertical padding :
+                <input name="line-padding-Y" type="number">
+              </label>
+              </br>
+              <label>Line opacity :
+                <input name="quote-box-opacity">
+              </label>
+              </br>
+              <label>Shadow effect :
+                <input name="quote-shadow-effect" type="checkbox">
+              </label>
+              </br>
+              <label class="quote-shadow">Shadow blur amount :
+                <input name="quote-shadow-blur-amount" class="quote-shadow" type="number">
+              </label>
+              <label class="quote-shadow">Shadow X shift :
+                <input name="quote-shadow-shift-X" class="quote-shadow" type="number">
+              </label>
+              </br>
+              <label class="quote-shadow">Shadow Y shift :
+                <input name="quote-shadow-shift-Y" class="quote-shadow" type="number">
+              </label>
+              </br>
+              <label class="quote-shadow">Shadow color :
+                <input name="quote-shadow-color" class="quote-shadow">
+              </label>
+              <button type="button" class="setting" id="quote-shadow-color-picker"><i class="fas fa-eye-dropper"></i></button>
+            </fieldset>
+            <fieldset>
+              <legend>Text</legend>
+              <label>Text weight :
+                <input name="font-weight" type="number">
+              </label>
+            </fieldset>
+            <fieldset>
+              <legend>Footer</legend>
+              <label>X position shift :
+                <input name="footer-shift-X" type="number">
+              </label>
+              </br>
+              <label>Font color :
+                <input name="footer-color">
+              </label>
+              <button type="button" class="setting" id="footer-color-picker"><i class="fas fa-eye-dropper"></i></button>
+              </br>
+              <label>Font family :
+                <input name="footer-font-family">
+              </label>
+              </br>
+              <label>Font weight :
+                <input name="info-weight" type="number">
+              </label>
+            </fieldset>
+          </form>
+        </div>
       </div>
-    </div>
-    <div id="svg-container" contenteditable="true">
-      <svg id="LyricCard"></svg>
-    </div>
+      <div id="svg-container" contenteditable="true">
+        <svg id="LyricCard"></svg>
+      </div>
+    </main>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/snap.svg/0.2.0/snap.svg-min.js"></script>
     <script src="https://kit.fontawesome.com/7bc025fc56.js" crossorigin="anonymous"></script>

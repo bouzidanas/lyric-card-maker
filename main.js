@@ -32,9 +32,9 @@ import './style.css';
   let quotePositionY = 140;
   let quoteBackgroundColor = "#4C5355";
   let quoteBackgroundOpacity = 1;
-  let lineSeparation = 72;
-  let linePaddingX = 4;
-  let linePaddingY = 6;
+  let lineSeparation = 50;
+  let linePaddingX = 6;
+  let linePaddingY = 8;
   let quoteShadowEffect = false;
   let quoteShadowBlurAmount = 4;
   let quoteShadowShiftX = 8;
@@ -364,6 +364,7 @@ import './style.css';
 
   renderSVG();
   setTimeout(() => createSVG(), 40);
+//   setTimeout(() => document.body.style.opacity = 1, 800);
 
   document.getElementById("LyricCard").contentEditable = true;
 
