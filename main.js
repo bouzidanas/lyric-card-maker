@@ -791,9 +791,9 @@ function createSVG(){
     const infoDragArrowGroup = canvas.group();
     infoDragArrowGroup.attr({class: "drag-arrow info"})
     const infoBBox = infoTextElement.getBBox();
-    const infoDragArrowVertEdge = canvas.line(infoBBox.x - dragArrowSpacing, infoBBox.y2 + 0.4*dragArrowSpacing - dragArrowHeight + 1, infoBBox.x - dragArrowSpacing, infoBBox.y2 + 0.4*dragArrowSpacing);
+    const infoDragArrowVertEdge = canvas.line(infoBBox.x - dragArrowSpacing + 2, infoBBox.y2 + 0.4*dragArrowSpacing - dragArrowHeight + 1, infoBBox.x - dragArrowSpacing + 2, infoBBox.y2 + 0.4*dragArrowSpacing);
     infoDragArrowVertEdge.attr({stroke: dragArrowColor, strokeWidth: 3});
-    const infoDragArrowHorizEdge = canvas.line(infoBBox.x - dragArrowSpacing - 1, infoBBox.y2 + 0.4*dragArrowSpacing, infoBBox.x - dragArrowSpacing + dragArrowWidth, infoBBox.y2 + 0.4*dragArrowSpacing);
+    const infoDragArrowHorizEdge = canvas.line(infoBBox.x - dragArrowSpacing + 1, infoBBox.y2 + 0.4*dragArrowSpacing, infoBBox.x - dragArrowSpacing + 2 + dragArrowWidth, infoBBox.y2 + 0.4*dragArrowSpacing);
     infoDragArrowHorizEdge.attr({stroke: dragArrowColor, strokeWidth: 3});
     const infoDragArrowBox = canvas.rect(infoBBox.x - 0.65*dragArrowSpacing - dragArrowWidth, infoBBox.y2 + 0.1*dragArrowSpacing - dragArrowHeight, 1.9*dragArrowWidth, 1.9*dragArrowHeight);
     infoDragArrowBox.attr({opacity: 0});
