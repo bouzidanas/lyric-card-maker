@@ -740,11 +740,11 @@ function createSVG(){
     const charDragArrowGroup = canvas.group();
     charDragArrowGroup.attr({class: "drag-arrow char"})
     const quoteCharBBox = quoteCharacter.getBBox();
-    const charDragArrowVertEdge = canvas.line(quoteCharBBox.x - 0.3*dragArrowSpacing, quoteCharBBox.y + 1.3*dragArrowSpacing - 1, quoteCharBBox.x - 0.3*dragArrowSpacing, quoteCharBBox.y + 1.3*dragArrowSpacing + dragArrowHeight - 2);
+    const charDragArrowVertEdge = canvas.line(quoteCharBBox.x - 0.45*dragArrowSpacing, quoteCharBBox.y + 1.3*dragArrowSpacing - 1, quoteCharBBox.x - 0.45*dragArrowSpacing, quoteCharBBox.y + 1.3*dragArrowSpacing + dragArrowHeight - 2);
     charDragArrowVertEdge.attr({stroke: dragArrowColor, strokeWidth: 3});
-    const charDragArrowHorizEdge = canvas.line(quoteCharBBox.x - 0.3*dragArrowSpacing - 1, quoteCharBBox.y + 1.3*dragArrowSpacing, quoteCharBBox.x - 0.3*dragArrowSpacing + dragArrowWidth, quoteCharBBox.y + 1.3*dragArrowSpacing);
+    const charDragArrowHorizEdge = canvas.line(quoteCharBBox.x - 0.45*dragArrowSpacing - 1, quoteCharBBox.y + 1.3*dragArrowSpacing, quoteCharBBox.x - 0.45*dragArrowSpacing + dragArrowWidth, quoteCharBBox.y + 1.3*dragArrowSpacing);
     charDragArrowHorizEdge.attr({stroke: dragArrowColor, strokeWidth: 3});
-    const charDragArrowBox = canvas.rect(quoteCharBBox.x - 0.73*dragArrowSpacing, quoteCharBBox.y + 0.7*dragArrowSpacing, 1.9*dragArrowWidth, 1.9*dragArrowHeight);
+    const charDragArrowBox = canvas.rect(quoteCharBBox.x - 0.88*dragArrowSpacing, quoteCharBBox.y + 0.8*dragArrowSpacing, 1.9*dragArrowWidth, 1.8*dragArrowHeight);
     charDragArrowBox.attr({opacity: 0});
     charDragArrowGroup.add(charDragArrowBox, charDragArrowVertEdge, charDragArrowHorizEdge);
     
@@ -825,6 +825,48 @@ function createSVG(){
     );
 
     quoteGroup.add(footerGroup);
+
+    const quoteDragArrowGroup = canvas.group();
+    quoteDragArrowGroup.attr({class: "drag-arrow quote"})
+    const quoteBBox = quoteGroup.getBBox();
+    const quoteDragArrowVertEdge = canvas.line(quoteBBox.x2 + 0.7*dragArrowSpacing, (infoBBox.y2 > quoteGroupBBox.y2 ? infoBBox.y2 : quoteBBox.y2) + 1.1*dragArrowSpacing - 2*dragArrowHeight + 1, quoteBBox.x2 + 0.7*dragArrowSpacing, (infoBBox.y2 > quoteGroupBBox.y2 ? infoBBox.y2 : quoteBBox.y2) + 1.1*dragArrowSpacing);
+    quoteDragArrowVertEdge.attr({stroke: dragArrowColor, strokeWidth: 6});
+    const quoteDragArrowHorizEdge = canvas.line(quoteBBox.x2 + 0.7*dragArrowSpacing - 2*dragArrowWidth - 2, (infoBBox.y2 > quoteGroupBBox.y2 ? infoBBox.y2 : quoteBBox.y2) + 1.1*dragArrowSpacing, quoteBBox.x2 + 0.7*dragArrowSpacing + 3, (infoBBox.y2 > quoteGroupBBox.y2 ? infoBBox.y2 : quoteBBox.y2) + 1.1*dragArrowSpacing);
+    quoteDragArrowHorizEdge.attr({stroke: dragArrowColor, strokeWidth: 6});
+    const quoteDragArrowBox = canvas.rect(quoteBBox.x2 - 1.75*dragArrowWidth, (infoBBox.y2 > quoteGroupBBox.y2 ? infoBBox.y2 : quoteBBox.y2) - 0.25*dragArrowSpacing - dragArrowHeight, 3.35*dragArrowWidth, 3.2*dragArrowHeight);
+    quoteDragArrowBox.attr({opacity: 0});
+    quoteDragArrowGroup.add(quoteDragArrowBox, quoteDragArrowVertEdge, quoteDragArrowHorizEdge);
+    
+    quoteGroup.add(quoteDragArrowGroup);
+
+    quoteDragArrowGroup.drag( 
+        function(dx, dy, posx, posy) { 
+            const quoteGroupEl = this.parent();
+            console.log("original transform: ", this.data('origTransform'));
+            quoteGroupEl.transform(this.data('origTransform') + (this.data('origTransform') ? "T" : "t") + [dx, dy]);
+        },
+        function(posx, posy){
+            this.data('origTransform', this.transform().local);
+            lineGroupDragStartX = this.parent().getBBox().x;
+            lineGroupDragStartY = this.parent().getBBox().y;
+            console.log("Move started");
+        },
+        function(){
+            console.log("Move stopped");
+            // linesGroupElement = document.getElementById("linesGroup");
+            // console.log(linesGroupElement.getBBox().x);
+            console.log(this.parent());
+            const delX = this.parent().getBBox().x - lineGroupDragStartX;
+            const delY = this.parent().getBBox().y - lineGroupDragStartY;
+            quotePositionX += delX;
+            quotePositionY += delY;
+            quoteCharPositionX += delX;
+            quoteCharPositionY += delY;
+            infoPositionX += delX;
+            infoPositionY += delY;
+            rerenderSVG();
+        }
+    );
 
     //Saving SVG file
     if(saveFile){

@@ -185,6 +185,10 @@ svg .drag-arrow {
   stroke: #ffffff;
 }
 
+#svg-container[contenteditable="true"]:focus:hover .drag-arrow:hover {
+  cursor: grab;
+}
+
 ::placeholder {
   color: #bbbbbb;
 }
