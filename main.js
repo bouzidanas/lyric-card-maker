@@ -3,10 +3,20 @@ import './style.css';
 //----------------------------------------------------------------------------
 //Parameters
 
+//Drag Arrow parameters
+let dragArrowSpacing = 20;
+let dragArrowWidth = 16;
+let dragArrowHeight = 18;
+let dragArrowColor = "#333333";
+
 //SVG parameters
 let width = 1200;                   //1080 pixels horizontal
 let height = 800;                   //720 pixels vertical
 let svgBackgroundColor = "white";
+
+let svgBlurredBackground = undefined;
+let svgBackgroundImage = undefined;
+let svgMask = undefined;
 
 //Background image parameters
 let imagePositionX = 0;
@@ -55,11 +65,15 @@ let quoteCharacterSize = 114;
 let quoteCharacterColor = quoteBackgroundColor;
 let quoteCharacterShiftX = -80;
 let quoteCharacterShiftY = 70;
+let quoteCharPositionX = quotePositionX + quoteCharacterShiftX;
+let quoteCharPositionY = quotePositionY + quoteCharacterShiftY;
 let quoteCharacterFontFamily = "Nunito Sans";
 
 //Song info parameters
 let infoPaddingFromBottom = 260;
 let infoShiftX = 0;
+let infoPositionX = quotePositionX + infoShiftX;
+let infoPositionY = height - infoPaddingFromBottom; 
 let infoTextColor = quoteBackgroundColor;
 let infoFontSize = 22;
 let infoFontWeight = 600;
@@ -570,12 +584,16 @@ function setParameters(obj){
     quoteShadowShiftY = parseInt(obj["quote-shadow-shift-Y"]);
     quoteShadowColor = obj["quote-shadow-color"];
 
+    quoteCharPositionX = quotePositionX + quoteCharacterShiftX;
+    quoteCharPositionY = quotePositionY + quoteCharacterShiftY;
+    infoPositionX = quotePositionX + infoShiftX;
+    infoPositionY = height - infoPaddingFromBottom;
 }
 
 //The following function Constructs the SVG
 function createSVG(){
     //Create empty SVG element
-    var canvas = Snap("#LyricCard");
+    const canvas = Snap("#LyricCard");
     canvas.attr({id: "LyricCard", width: width, height: height});
     // var canvas = Snap(width, height);
     // canvas.attr({id: "LyricCard"});
@@ -584,14 +602,18 @@ function createSVG(){
     // var frag = Snap.parse('<style>@import url("https://fonts.googleapis.com/css2?family=Varela+Round");@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900");</style>')
     // canvas.append( frag )
 
+    const backgroundGroup = canvas.group();
+
     //Setting up blur and shadow effects
-    var blurFilter = canvas.filter(Snap.filter.blur(blurAmount, blurAmount));
-    var quoteShadowFilter = canvas.filter(Snap.filter.shadow(quoteShadowShiftX, quoteShadowShiftY, quoteShadowBlurAmount, quoteShadowColor, parseFloat(shadowOpacity)));
-    var imageShadowFilter = canvas.filter(Snap.filter.shadow(imageShadowShiftX, imageShadowShiftY, imageShadowBlurAmount, imageShadowColor, parseFloat(shadowOpacity)));
+    const blurFilter = canvas.filter(Snap.filter.blur(blurAmount, blurAmount));
+    const quoteShadowFilter = canvas.filter(Snap.filter.shadow(quoteShadowShiftX, quoteShadowShiftY, quoteShadowBlurAmount, quoteShadowColor, parseFloat(shadowOpacity)));
+    const imageShadowFilter = canvas.filter(Snap.filter.shadow(imageShadowShiftX, imageShadowShiftY, imageShadowBlurAmount, imageShadowColor, parseFloat(shadowOpacity)));
 
     //Setting up SVG background color
-    var svgBackground = canvas.rect(0,0, width, height);
+    const svgBackground = canvas.rect(0,0, width, height);
     svgBackground.attr({fill: svgBackgroundColor});
+
+    backgroundGroup.add(svgBackground);
 
     //Setting up background image with "dimming" mask and blur effects
     if (blurCloneEffect){
@@ -605,34 +627,45 @@ function createSVG(){
             blurredHeight = height + 2*blurAmount;
             blurredWidth = blurredHeight*imageRatio;
         }
-        var backgroundBlurredImage = canvas.image(imageURL, (width - blurredWidth)/2, (height - blurredHeight)/2, blurredWidth, blurredHeight);
-
+        const backgroundBlurredImage = svgBlurredBackground ?? canvas.image(imageURL, (width - blurredWidth)/2, (height - blurredHeight)/2, blurredWidth, blurredHeight);
         backgroundBlurredImage.attr({filter: blurFilter});
 
-        var mask = canvas.rect(0,0, width, height);
+        var mask = svgMask ?? canvas.rect(0,0, width, height);
         mask.attr({fill: imageMaskColor});
         mask.attr({opacity: imageDarkMaskOpacity});
 
-        let backgroundImage = canvas.image(imageURL, imagePositionX, imagePositionY, imageWidth, imageHeight);
+        let backgroundImage = svgBackgroundImage ?? canvas.image(imageURL, imagePositionX, imagePositionY, imageWidth, imageHeight);
 
         if (imageShadowEffect){
             backgroundImage.attr({filter: imageShadowFilter});
         }
+
+
+        svgBlurredBackground = backgroundBlurredImage;
+        svgMask = mask;
+        svgBackgroundImage = backgroundImage;
+        backgroundGroup.add(backgroundBlurredImage, mask, backgroundImage);
     }
     else{
-        let backgroundImage = canvas.image(imageURL, imagePositionX, imagePositionY, imageWidth, imageHeight);
+        let backgroundImage = svgBackgroundImage ?? canvas.image(imageURL, imagePositionX, imagePositionY, imageWidth, imageHeight);
 
-        var mask = canvas.rect(0,0, width, height);
+        var mask = svgMask ?? canvas.rect(0,0, width, height);
         mask.attr({fill: imageMaskColor});
         mask.attr({opacity: imageDarkMaskOpacity});
 
         if(blurEffect){
             backgroundImage.attr({filter: blurFilter});
         }
+
+        svgBackgroundImage = backgroundImage;
+        svgMask = mask;
+        backgroundGroup.add(backgroundImage, mask);
     }
 
-    var quoteGroup = canvas.group();
-
+    const quoteGroup = canvas.group();
+    const linesGroup = canvas.group();
+    linesGroup.attr({id: "linesGroup"});
+    
     for (let step = 0; step < lines.length; step++) {
 
         let linePositionX = quotePositionX + 1.2*linePaddingX;
@@ -649,25 +682,149 @@ function createSVG(){
         lineBlock.attr({fill: quoteBackgroundColor});
         lineBlock.attr({opacity: quoteBackgroundOpacity});
 
-        quoteGroup.add(lineBlock, lineText)
+        linesGroup.add(lineBlock, lineText)
     }
 
-    let quoteCharacter = canvas.text(quotePositionX + quoteCharacterShiftX, quotePositionY + quoteCharacterShiftY, quoteChar);
+    quoteGroup.add(linesGroup);
+
+    const linesDragArrowGroup = canvas.group();
+    linesDragArrowGroup.attr({class: "drag-arrow lines"})
+
+    const quoteGroupBBox = quoteGroup.getBBox();
+    const dragArrowVerticalEdge = canvas.line(quoteGroupBBox.x - dragArrowSpacing, quoteGroupBBox.y2 + dragArrowSpacing - dragArrowHeight + 1, quoteGroupBBox.x - dragArrowSpacing, quoteGroupBBox.y2 + dragArrowSpacing);
+    dragArrowVerticalEdge.attr({stroke: dragArrowColor, strokeWidth: 3});
+    const dragArrowHorizontalEdge = canvas.line(quoteGroupBBox.x - dragArrowSpacing - 1, quoteGroupBBox.y2 + dragArrowSpacing, quoteGroupBBox.x - dragArrowSpacing + dragArrowWidth, quoteGroupBBox.y2 + dragArrowSpacing);
+    dragArrowHorizontalEdge.attr({stroke: dragArrowColor, strokeWidth: 3});
+    const dragArrowBox = canvas.rect(quoteGroupBBox.x - 0.7*dragArrowSpacing - dragArrowWidth, quoteGroupBBox.y2 + 0.7*dragArrowSpacing - dragArrowHeight, 1.9*dragArrowWidth, 1.9*dragArrowHeight);
+    dragArrowBox.attr({opacity: 0});
+    linesDragArrowGroup.add(dragArrowBox, dragArrowVerticalEdge, dragArrowHorizontalEdge);
+
+    linesGroup.add(linesDragArrowGroup);
+
+    console.log("quoteGroup BBox: ", quoteGroup.getBBox());
+    
+    var lineGroupDragStartX = 0;
+    var lineGroupDragStartY = 0;
+
+    linesDragArrowGroup.drag( 
+        function(dx, dy, posx, posy) { 
+            const quoteGroupEl = this.parent();
+            console.log("original transform: ", this.data('origTransform'));
+            quoteGroupEl.transform(this.data('origTransform') + (this.data('origTransform') ? "T" : "t") + [dx, dy]);
+        },
+        function(posx, posy){
+            this.data('origTransform', this.transform().local);
+            lineGroupDragStartX = this.parent().getBBox().x;
+            lineGroupDragStartY = this.parent().getBBox().y;
+            console.log("Move started");
+        },
+        function(){
+            console.log("Move stopped");
+            // linesGroupElement = document.getElementById("linesGroup");
+            // console.log(linesGroupElement.getBBox().x);
+            console.log(this.parent());
+            quotePositionX += this.parent().getBBox().x - lineGroupDragStartX;
+            quotePositionY += this.parent().getBBox().y - lineGroupDragStartY;
+            rerenderSVG();
+        }
+    );
+
+    const quoteCharGroup = canvas.group();
+
+    const quoteCharacter = canvas.text(quoteCharPositionX, quoteCharPositionY, quoteChar);
     quoteCharacter.attr({fontFamily: quoteCharacterFontFamily});
     quoteCharacter.attr({fontSize: ""+quoteCharacterSize+"pt"});
     quoteCharacter.attr({fill: quoteCharacterColor});
-    quoteGroup.add(quoteCharacter);
+    quoteCharGroup.add(quoteCharacter);
+
+    const charDragArrowGroup = canvas.group();
+    charDragArrowGroup.attr({class: "drag-arrow char"})
+    const quoteCharBBox = quoteCharacter.getBBox();
+    const charDragArrowVertEdge = canvas.line(quoteCharBBox.x - 0.3*dragArrowSpacing, quoteCharBBox.y + 1.3*dragArrowSpacing - 1, quoteCharBBox.x - 0.3*dragArrowSpacing, quoteCharBBox.y + 1.3*dragArrowSpacing + dragArrowHeight - 2);
+    charDragArrowVertEdge.attr({stroke: dragArrowColor, strokeWidth: 3});
+    const charDragArrowHorizEdge = canvas.line(quoteCharBBox.x - 0.3*dragArrowSpacing - 1, quoteCharBBox.y + 1.3*dragArrowSpacing, quoteCharBBox.x - 0.3*dragArrowSpacing + dragArrowWidth, quoteCharBBox.y + 1.3*dragArrowSpacing);
+    charDragArrowHorizEdge.attr({stroke: dragArrowColor, strokeWidth: 3});
+    const charDragArrowBox = canvas.rect(quoteCharBBox.x - 0.73*dragArrowSpacing, quoteCharBBox.y + 0.7*dragArrowSpacing, 1.9*dragArrowWidth, 1.9*dragArrowHeight);
+    charDragArrowBox.attr({opacity: 0});
+    charDragArrowGroup.add(charDragArrowBox, charDragArrowVertEdge, charDragArrowHorizEdge);
+    
+    quoteCharGroup.add(charDragArrowGroup);
+
+    charDragArrowGroup.drag( 
+        function(dx, dy, posx, posy) { 
+            const quoteCharGroupEl = this.parent();
+            console.log("original transform: ", this.data('origTransform'));
+            quoteCharGroupEl.transform(this.data('origTransform') + (this.data('origTransform') ? "T" : "t") + [dx, dy]);
+        },
+        function(posx, posy){
+            this.data('origTransform', this.transform().local);
+            lineGroupDragStartX = this.parent().getBBox().x;
+            lineGroupDragStartY = this.parent().getBBox().y;
+            console.log("Move started");
+        },
+        function(){
+            console.log("Move stopped");
+            // linesGroupElement = document.getElementById("linesGroup");
+            // console.log(linesGroupElement.getBBox().x);
+            console.log(this.parent());
+            quoteCharPositionX += this.parent().getBBox().x - lineGroupDragStartX;
+            quoteCharPositionY += this.parent().getBBox().y - lineGroupDragStartY;
+            rerenderSVG();
+        }
+    );
+
+    quoteGroup.add(quoteCharGroup);
 
     if (quoteShadowEffect){
         quoteGroup.attr({filter: quoteShadowFilter});
     }
 
-    let infoTextElement = canvas.text(quotePositionX + infoShiftX, height - infoPaddingFromBottom, infoText);
+    const footerGroup = canvas.group();
+    
+    const infoTextElement = canvas.text(infoPositionX, infoPositionY, infoText);
     infoTextElement.attr({fontFamily: infoFontFamily});
     infoTextElement.attr({fontSize: ""+infoFontSize+"pt"});
     infoTextElement.attr({fill: infoTextColor});
     infoTextElement.attr({fontWeight: infoFontWeight});
-    quoteGroup.add(infoTextElement);
+    footerGroup.add(infoTextElement);
+
+    const infoDragArrowGroup = canvas.group();
+    infoDragArrowGroup.attr({class: "drag-arrow info"})
+    const infoBBox = infoTextElement.getBBox();
+    const infoDragArrowVertEdge = canvas.line(infoBBox.x - dragArrowSpacing, infoBBox.y2 + 0.4*dragArrowSpacing - dragArrowHeight + 1, infoBBox.x - dragArrowSpacing, infoBBox.y2 + 0.4*dragArrowSpacing);
+    infoDragArrowVertEdge.attr({stroke: dragArrowColor, strokeWidth: 3});
+    const infoDragArrowHorizEdge = canvas.line(infoBBox.x - dragArrowSpacing - 1, infoBBox.y2 + 0.4*dragArrowSpacing, infoBBox.x - dragArrowSpacing + dragArrowWidth, infoBBox.y2 + 0.4*dragArrowSpacing);
+    infoDragArrowHorizEdge.attr({stroke: dragArrowColor, strokeWidth: 3});
+    const infoDragArrowBox = canvas.rect(infoBBox.x - 0.65*dragArrowSpacing - dragArrowWidth, infoBBox.y2 + 0.1*dragArrowSpacing - dragArrowHeight, 1.9*dragArrowWidth, 1.9*dragArrowHeight);
+    infoDragArrowBox.attr({opacity: 0});
+    infoDragArrowGroup.add(infoDragArrowBox, infoDragArrowVertEdge, infoDragArrowHorizEdge);
+    
+    footerGroup.add(infoDragArrowGroup);
+
+    infoDragArrowGroup.drag( 
+        function(dx, dy, posx, posy) { 
+            const infoGroupEl = this.parent();
+            console.log("original transform: ", this.data('origTransform'));
+            infoGroupEl.transform(this.data('origTransform') + (this.data('origTransform') ? "T" : "t") + [dx, dy]);
+        },
+        function(posx, posy){
+            this.data('origTransform', this.transform().local);
+            lineGroupDragStartX = this.parent().getBBox().x;
+            lineGroupDragStartY = this.parent().getBBox().y;
+            console.log("Move started");
+        },
+        function(){
+            console.log("Move stopped");
+            // linesGroupElement = document.getElementById("linesGroup");
+            // console.log(linesGroupElement.getBBox().x);
+            console.log(this.parent());
+            infoPositionX += this.parent().getBBox().x - lineGroupDragStartX;
+            infoPositionY += this.parent().getBBox().y - lineGroupDragStartY;
+            rerenderSVG();
+        }
+    );
+
+    quoteGroup.add(footerGroup);
 
     //Saving SVG file
     if(saveFile){
@@ -686,6 +843,7 @@ function rerenderSVG(){
     //First remove current SVG (and other elements previously generated) that is to be replaced
     let svgElement = document.getElementsByTagName("svg")[0];
     // empty contents of svgElement
+    console.log(svgElement.children)
     svgElement.innerHTML = '';
 
     // // remove svgElement

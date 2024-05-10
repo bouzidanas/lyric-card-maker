@@ -173,6 +173,18 @@ svg {
   border: 3px solid #333333;
 }
 
+svg .drag-arrow {
+  display: none;
+}
+
+#svg-container[contenteditable="true"]:focus:hover .drag-arrow {
+  display: unset;
+}
+
+#svg-container[contenteditable="true"]:focus:hover .drag-arrow:hover line {
+  stroke: #ffffff;
+}
+
 ::placeholder {
   color: #bbbbbb;
 }
