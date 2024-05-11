@@ -415,20 +415,14 @@ function observerCallback(mutationList, observer){
             if(lines.includes(mutation.oldValue)){
                 lines[lines.indexOf(mutation.oldValue)] = mutation.target.data;
                 console.log("rerendering");
-                // rerenderSVG();
             } else if (mutation.oldValue === infoText){
                 infoText = mutation.target.data;
-                console.log("rerendering");
-                // rerenderSVG();
             } else if (mutation.oldValue === quoteChar){
                 quoteChar = mutation.target.data;
-                console.log("rerendering");
-                // rerenderSVG();
             } else {
                 console.log("No match found");
             }
         }
-
     }
 };
 
@@ -701,7 +695,10 @@ function createSVG(){
 
     linesGroup.add(linesDragArrowGroup);
 
-    console.log("quoteGroup BBox: ", quoteGroup.getBBox());
+    const linesGroupBBox = linesGroup.getBBox();
+    const linesBackgroundRect = canvas.rect(linesGroupBBox.x - 5*linePaddingX, linesGroupBBox.y - 4*linePaddingY, linesGroupBBox.width + 10*linePaddingX, linesGroupBBox.height + 8*linePaddingY);
+    linesBackgroundRect.attr({class: "lines-background area", opacity: 0});
+    linesGroup.prepend(linesBackgroundRect);
     
     var lineGroupDragStartX = 0;
     var lineGroupDragStartY = 0;
@@ -749,6 +746,11 @@ function createSVG(){
     charDragArrowGroup.add(charDragArrowBox, charDragArrowVertEdge, charDragArrowHorizEdge);
     
     quoteCharGroup.add(charDragArrowGroup);
+
+    const quoteCharGroupBBox = quoteCharGroup.getBBox();
+    const quoteCharBackgroundRect = canvas.rect(quoteCharGroupBBox.x - 4*linePaddingX, quoteCharGroupBBox.y + 1*linePaddingY, quoteCharGroupBBox.width + 6*linePaddingX, quoteCharGroupBBox.height - 2*linePaddingY);
+    quoteCharBackgroundRect.attr({class: "char-background area", opacity: 0});
+    quoteCharGroup.prepend(quoteCharBackgroundRect);
 
     charDragArrowGroup.drag( 
         function(dx, dy, posx, posy) { 
@@ -801,6 +803,11 @@ function createSVG(){
     
     footerGroup.add(infoDragArrowGroup);
 
+    const footerGroupBBox = footerGroup.getBBox();
+    const footerBackgroundRect = canvas.rect(footerGroupBBox.x - 5*linePaddingX, footerGroupBBox.y - 2.5*linePaddingY, footerGroupBBox.width + 10*linePaddingX, footerGroupBBox.height + 5*linePaddingY);
+    footerBackgroundRect.attr({class: "footer-background area", opacity: 0});
+    footerGroup.prepend(footerBackgroundRect);
+
     infoDragArrowGroup.drag( 
         function(dx, dy, posx, posy) { 
             const infoGroupEl = this.parent();
@@ -838,6 +845,11 @@ function createSVG(){
     quoteDragArrowGroup.add(quoteDragArrowBox, quoteDragArrowVertEdge, quoteDragArrowHorizEdge);
     
     quoteGroup.add(quoteDragArrowGroup);
+
+    const fullQuoteGroupBBox = quoteGroup.getBBox();
+    const quoteBackgroundRect = canvas.rect(fullQuoteGroupBBox.x - 1*linePaddingX, fullQuoteGroupBBox.y - 0*linePaddingY, fullQuoteGroupBBox.width + 7*linePaddingX, fullQuoteGroupBBox.height + 3*linePaddingY);
+    quoteBackgroundRect.attr({class: "quote-background area", opacity: 0});
+    quoteGroup.prepend(quoteBackgroundRect);
 
     quoteDragArrowGroup.drag( 
         function(dx, dy, posx, posy) { 
@@ -941,29 +953,35 @@ function loadCaretPosition(){
         const quoteTextGroup = document.getElementById("LyricCard").childNodes[1];
         let sel = window.getSelection();
         if (cursorElement === "infoText"){
-            let infoTextElement = quoteTextGroup.childNodes[2].childNodes[0];
-            let range = document.createRange();
-            range.setStart(infoTextElement.childNodes[0], caretPosition);
-            range.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(range);
+            let infoTextElement = quoteTextGroup.childNodes[3].childNodes[1];
+            if (infoTextElement){
+                let range = document.createRange();
+                range.setStart(infoTextElement.childNodes[0], caretPosition);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
         }
         else if (cursorElement === "quoteChar"){
-            let quoteCharElement = quoteTextGroup.childNodes[1].childNodes[0];
-            let range = document.createRange();
-            range.setStart(quoteCharElement.childNodes[0], caretPosition);
-            range.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(range);
+            let quoteCharElement = quoteTextGroup.childNodes[2].childNodes[1];
+            if (quoteCharElement){
+                let range = document.createRange();
+                range.setStart(quoteCharElement.childNodes[0], caretPosition);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
         }
         else if (typeof cursorElement === 'number' && cursorElement < lines.length){
-            let lineElement = quoteTextGroup.childNodes[0].childNodes[2*cursorElement + 1];
+            let lineElement = quoteTextGroup.childNodes[1].childNodes[2*cursorElement + 2];
             console.log("lineElement: ", lineElement);
-            let range = document.createRange();
-            range.setStart(lineElement.childNodes[0], caretPosition);
-            range.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(range);
+            if (lineElement){
+                let range = document.createRange();
+                range.setStart(lineElement.childNodes[0], caretPosition);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
         }
     }
 }

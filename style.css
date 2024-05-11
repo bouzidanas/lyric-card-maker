@@ -177,7 +177,7 @@ svg .drag-arrow {
   display: none;
 }
 
-#svg-container[contenteditable="true"]:focus:hover .drag-arrow {
+#svg-container[contenteditable="true"]:focus g:hover > .drag-arrow {
   display: unset;
 }
 
