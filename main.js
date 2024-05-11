@@ -894,7 +894,6 @@ function createSVG(){
      and after generating the SVG.
 **/
 function rerenderSVG(){
-
     //First save the caret position
     saveCaretPosition();
 
@@ -913,6 +912,7 @@ function rerenderSVG(){
     loadCaretPosition();
 }
 
+//Function to save the caret position in the SVG
 function saveCaretPosition(){
     if (window.getSelection && window.getSelection().focusNode) {
         const selection = window.getSelection();
@@ -942,6 +942,7 @@ function saveCaretPosition(){
     }
 }
 
+//Function to load the caret position in the SVG
 function loadCaretPosition(){
     //The following if statement uses elements according to the ASSUMED structure of the SVG.
     //If the structure changes, this function will need to be updated!
@@ -1324,4 +1325,7 @@ function update(e){
         console.log("keyCode: " + e.keyCode);
     }
 }
+
+//WebFont loading function
+
 
