@@ -11,7 +11,7 @@ let dragArrowColor = "#333333";
 
 //SVG parameters
 let width = 1200;                   //1080 pixels horizontal
-let height = 800;                   //720 pixels vertical
+let height = 800;                   //800 pixels vertical
 let svgBackgroundColor = "white";
 
 let svgBlurredBackground = undefined;
