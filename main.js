@@ -89,6 +89,10 @@ let loadFilename = filename + "_settings";
 let cursorElement = undefined;
 let caretPosition = 0;
 
+//App state history
+let appState = [];
+let appStateIndex = 0;
+
 //----------------------------------------------------------------------------
 //Main
 
@@ -516,19 +520,18 @@ function downloadSVG(){
 }
 
 function setImageParameters(url, setDimensions) {
-var img = new Image();
-img.onload = function() {
-    if (setDimensions){
-        imageWidth = parseInt(this.width);
-        imageHeight = parseInt(this.height);
-    }
-    imageRatio = parseInt(this.width)/parseInt(this.height);
-};
-img.src = url;
+    var img = new Image();
+    img.onload = function() {
+        if (setDimensions){
+            imageWidth = parseInt(this.width);
+            imageHeight = parseInt(this.height);
+        }
+        imageRatio = parseInt(this.width)/parseInt(this.height);
+    };
+    img.src = url;
 }
 
 function setParameters(obj){
-
     width = parseInt(obj["svg-width"]);
     height = parseInt(obj["svg-height"]);
     svgBackgroundColor = obj["background-color"];
@@ -1328,4 +1331,109 @@ function update(e){
 
 //WebFont loading function
 
+
+//Push App state
+function addState(){
+    let state = {
+        width: width,
+        height: height,
+        imageURL: imageURL,
+        imagePositionX: imagePositionX,
+        imagePositionY: imagePositionY,
+        imageWidth: imageWidth,
+        imageHeight: imageHeight,
+        lines: lines,
+        quotePositionX: quotePositionX,
+        quotePositionY: quotePositionY,
+        linePaddingX: linePaddingX,
+        linePaddingY: linePaddingY,
+        lineSeparation: lineSeparation,
+        quoteBackgroundColor: quoteBackgroundColor,
+        fontFamilyCustom: fontFamilyCustom,
+        fontSizeCustom: fontSizeCustom,
+        fontColor: fontColor,
+        infoText: infoText,
+        infoFontSize: infoFontSize,
+        infoPaddingFromBottom: infoPaddingFromBottom,
+        quoteCharacterSize: quoteCharacterSize,
+        infoFontWeight: infoFontWeight,
+        fontWeightCustom: fontWeightCustom,
+        quoteBackgroundOpacity: quoteBackgroundOpacity,
+        imageDarkMaskOpacity: imageDarkMaskOpacity,
+        quoteCharacterShiftX: quoteCharacterShiftX,
+        quoteCharacterShiftY: quoteCharacterShiftY,
+        svgBackgroundColor: svgBackgroundColor,
+        imageMaskColor: imageMaskColor,
+        blurAmount: blurAmount,
+        quoteCharacterColor: quoteCharacterColor,
+        infoTextColor: infoTextColor,
+        quoteCharacterFontFamily: quoteCharacterFontFamily,
+        infoFontFamily: infoFontFamily,
+        infoShiftX: infoShiftX,
+        linePaddingX: linePaddingX,
+        linePaddingY: linePaddingY,
+        imageShadowBlurAmount: imageShadowBlurAmount,
+        imageShadowShiftX: imageShadowShiftX,
+        imageShadowShiftY: imageShadowShiftY,
+        imageShadowColor: imageShadowColor,
+        quoteShadowBlurAmount: quoteShadowBlurAmount,
+        quoteShadowShiftX: quoteShadowShiftX,
+        quoteShadowShiftY: quoteShadowShiftY,
+        quoteShadowColor: quoteShadowColor
+    };
+
+    appState.push(state);
+}
+
+//Load App state at appStateIndex
+function loadState(){
+    let state = appState[appStateIndex];
+    width = state.width;
+    height = state.height;
+    imageURL = state.imageURL;
+    imagePositionX = state.imagePositionX;
+    imagePositionY = state.imagePositionY;
+    imageWidth = state.imageWidth;
+    imageHeight = state.imageHeight;
+    lines = state.lines;
+    quotePositionX = state.quotePositionX;
+    quotePositionY = state.quotePositionY;
+    linePaddingX = state.linePaddingX;
+    linePaddingY = state.linePaddingY;
+    lineSeparation = state.lineSeparation;
+    quoteBackgroundColor = state.quoteBackgroundColor;
+    fontFamilyCustom = state.fontFamilyCustom;
+    fontSizeCustom = state.fontSizeCustom;
+    fontColor = state.fontColor;
+    infoText = state.infoText;
+    infoFontSize = state.infoFontSize;
+    infoPaddingFromBottom = state.infoPaddingFromBottom;
+    quoteCharacterSize = state.quoteCharacterSize;
+    infoFontWeight = state.infoFontWeight;
+    fontWeightCustom = state.fontWeightCustom;
+    quoteBackgroundOpacity = state.quoteBackgroundOpacity;
+    imageDarkMaskOpacity = state.imageDarkMaskOpacity;
+    quoteCharacterShiftX = state.quoteCharacterShiftX;
+    quoteCharacterShiftY = state.quoteCharacterShiftY;
+    svgBackgroundColor = state.svgBackgroundColor;
+    imageMaskColor = state.imageMaskColor;
+    blurAmount = state.blurAmount;
+    quoteCharacterColor = state.quoteCharacterColor;
+    infoTextColor = state.infoTextColor;
+    quoteCharacterFontFamily = state.quoteCharacterFontFamily;
+    infoFontFamily = state.infoFontFamily;
+    infoShiftX = state.infoShiftX;
+    linePaddingX = state.linePaddingX;
+    linePaddingY = state.linePaddingY;
+    imageShadowBlurAmount = state.imageShadowBlurAmount;
+    imageShadowShiftX = state.imageShadowShiftX;
+    imageShadowShiftY = state.imageShadowShiftY;
+    imageShadowColor = state.imageShadowColor;
+    quoteShadowBlurAmount = state.quoteShadowBlurAmount;
+    quoteShadowShiftX = state.quoteShadowShiftX;
+    quoteShadowShiftY = state.quoteShadowShiftY;
+    quoteShadowColor = state.quoteShadowColor;
+
+    rerenderSVG();
+}
 
