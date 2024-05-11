@@ -504,6 +504,9 @@ function downloadSVG(){
     document.body.appendChild(canvasH);
 
     const element = document.createElement("a");
+
+    //Remove area backgrounds from svg before downloading
+
     let svgString = new XMLSerializer().serializeToString(document.querySelector('svg'));
 
     let canvas = document.getElementById("canvas");
@@ -1332,7 +1335,7 @@ function update(e){
 //WebFont loading function
 
 
-//Push App state
+//Add current app state to state history
 function addState(){
     let state = {
         width: width,
