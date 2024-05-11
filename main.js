@@ -401,7 +401,6 @@ const observer = new MutationObserver(observerCallback);
 targetNode.onfocus = () => observer.observe(targetNode, config);
 targetNode.onblur = () => observer.disconnect();
 targetNode.onkeydown = (event) => {
-
     //check if backspace was pressed
     if(window.getSelection() && window.getSelection().focusNode){
         const fNode = window.getSelection().focusNode;
@@ -425,6 +424,19 @@ targetNode.onkeydown = (event) => {
                 }
             }
         }
+        else if (event.key === "Enter" && caretPos < 2){
+            event.preventDefault();
+            if (caretPos === 1){
+                const newText = text.slice(0, caretPos);
+                const index = lines.indexOf(text);
+                lines[index] = text.slice(caretPos);
+                lines.splice(index, 0, newText);
+                rerenderSVG();
+                cursorElement = index + 1;
+                caretPosition = 0;
+                loadCaretPosition();
+            }
+        }
     }
 };
 
@@ -440,7 +452,7 @@ function observerCallback(mutationList, observer){
             const newText = mutation.target.data;
             if(lines.includes(mutation.oldValue)){
                 console.log("Found a match");
-                if (mutation.oldValue.trim().endsWith(newText.trim()) && newText.length < mutation.oldValue.length){
+                if (mutation.oldValue.trim().endsWith(newText.trim()) && newText.length < mutation.oldValue.length - 1){
                     const index = lines.indexOf(mutation.oldValue);
                     console.log("line split detected");
                     lines[lines.indexOf(mutation.oldValue)] = newText;
