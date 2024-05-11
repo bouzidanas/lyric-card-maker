@@ -424,9 +424,9 @@ targetNode.onkeydown = (event) => {
                 }
             }
         }
-        else if (event.key === "Enter" && caretPos < 2){
+        else if (event.key === "Enter" && (caretPos < 2 || !lines.includes(text))){
             event.preventDefault();
-            if (caretPos === 1){
+            if (caretPos === 1 && lines.includes(text)){
                 const newText = text.slice(0, caretPos);
                 const index = lines.indexOf(text);
                 lines[index] = text.slice(caretPos);
