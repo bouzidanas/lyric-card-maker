@@ -401,11 +401,32 @@ const observer = new MutationObserver(observerCallback);
 targetNode.onfocus = () => observer.observe(targetNode, config);
 targetNode.onblur = () => observer.disconnect();
 targetNode.onkeydown = (event) => {
-    if(event.keyCode === 13){
-        event.preventDefault();
-        rerenderSVG();
+
+    //check if backspace was pressed
+    if(window.getSelection() && window.getSelection().focusNode){
+        const fNode = window.getSelection().focusNode;
+        const caretPos = window.getSelection().focusOffset;
+        const text = fNode.textContent;
+        if (event.key === "Backspace" && caretPos == 0){
+            event.preventDefault();
+            if (lines.includes(text)){
+                const index = lines.indexOf(text);
+                if (index > 0){
+                    const tempCursorElement = index - 1;
+                    const tempCaretPosition = lines[index - 1].length;
+                    console.log("cursorElement: ", tempCursorElement);
+                    console.log("caretPosition: ", tempCaretPosition);
+                    lines[index - 1] += text;
+                    lines = lines.filter((line, i) => i !== index);
+                    rerenderSVG();
+                    cursorElement = tempCursorElement;
+                    caretPosition = tempCaretPosition;
+                    loadCaretPosition();
+                }
+            }
+        }
     }
-}
+};
 
 //----------------------------------------------------------------------------
 //Function definitions
@@ -416,13 +437,27 @@ function observerCallback(mutationList, observer){
             console.log("The characterData was modified.");
             console.log(mutation.target.data);
             console.log(mutation.oldValue);
+            const newText = mutation.target.data;
             if(lines.includes(mutation.oldValue)){
-                lines[lines.indexOf(mutation.oldValue)] = mutation.target.data;
-                console.log("rerendering");
+                console.log("Found a match");
+                if (mutation.oldValue.trim().endsWith(newText.trim()) && newText.length < mutation.oldValue.length){
+                    const index = lines.indexOf(mutation.oldValue);
+                    console.log("line split detected");
+                    lines[lines.indexOf(mutation.oldValue)] = newText;
+                    lines.splice(index, 0, mutation.oldValue.slice(0, mutation.oldValue.length - newText.length));
+                    cursorElement = lines.indexOf(mutation.oldValue) + 1;
+                    caretPosition = 0;
+                } 
+                else {
+                    lines[lines.indexOf(mutation.oldValue)] = newText;
+                }
+                rerenderSVG();
             } else if (mutation.oldValue === infoText){
-                infoText = mutation.target.data;
+                infoText = newText;
+                rerenderSVG();
             } else if (mutation.oldValue === quoteChar){
-                quoteChar = mutation.target.data;
+                quoteChar = newText;
+                rerenderSVG();
             } else {
                 console.log("No match found");
             }
@@ -916,6 +951,7 @@ function rerenderSVG(){
 
     //Restore caret position
     loadCaretPosition();
+    setFormPlaceholders();
 }
 
 //Function to save the caret position in the SVG
@@ -1043,11 +1079,11 @@ function setFormPlaceholders(){
     document.getElementsByName("font-color")[0].defaultValue = fontColor;
 
     //Footer
-    document.getElementsByName("info-padding")[0].placeholder = infoPaddingFromBottom;
+    document.getElementsByName("info-padding")[0].placeholder = height - infoPositionY;
     document.getElementsByName("info-size")[0].placeholder = infoFontSize;
     document.getElementsByName("footer-text")[0].placeholder = infoText;
 
-    document.getElementsByName("info-padding")[0].defaultValue = infoPaddingFromBottom;
+    document.getElementsByName("info-padding")[0].defaultValue = height - infoPositionY;
     document.getElementsByName("info-size")[0].defaultValue = infoFontSize;
 
     //Advanced section
@@ -1057,8 +1093,8 @@ function setFormPlaceholders(){
     document.getElementsByName("quote-box-opacity")[0].placeholder = quoteBackgroundOpacity;
     document.getElementsByName("glyph-size")[0].placeholder = quoteCharacterSize;
     document.getElementsByName("mask-opacity")[0].placeholder = imageDarkMaskOpacity;
-    document.getElementsByName("glyph-shift-X")[0].placeholder = quoteCharacterShiftX;
-    document.getElementsByName("glyph-shift-Y")[0].placeholder = quoteCharacterShiftY;
+    document.getElementsByName("glyph-shift-X")[0].placeholder = quotePositionX - quoteCharPositionX;
+    document.getElementsByName("glyph-shift-Y")[0].placeholder = quotePositionY - quoteCharPositionY;
     document.getElementsByName("background-color")[0].placeholder = svgBackgroundColor;
     document.getElementsByName("mask-color")[0].placeholder = imageMaskColor;
     document.getElementsByName("blur-amount")[0].placeholder = blurAmount;
@@ -1082,8 +1118,8 @@ function setFormPlaceholders(){
     document.getElementsByName("quote-box-opacity")[0].defaultValue = quoteBackgroundOpacity;
     document.getElementsByName("glyph-size")[0].defaultValue = quoteCharacterSize;
     document.getElementsByName("mask-opacity")[0].defaultValue = imageDarkMaskOpacity;
-    document.getElementsByName("glyph-shift-X")[0].defaultValue = quoteCharacterShiftX;
-    document.getElementsByName("glyph-shift-Y")[0].defaultValue = quoteCharacterShiftY;
+    document.getElementsByName("glyph-shift-X")[0].defaultValue = quotePositionX - quoteCharPositionX;
+    document.getElementsByName("glyph-shift-Y")[0].defaultValue = quotePositionY - quoteCharPositionY;
     document.getElementsByName("background-color")[0].defaultValue = svgBackgroundColor;
     document.getElementsByName("mask-color")[0].defaultValue = imageMaskColor;
     document.getElementsByName("blurred-back-effect")[0].defaultChecked = blurEffect;
