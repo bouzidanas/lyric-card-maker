@@ -900,6 +900,9 @@ function rerenderSVG(){
 
     //Generated new SVG
     createSVG();
+
+    //Restore caret position
+    loadCaretPosition();
 }
 
 function saveCaretPosition(){
@@ -920,12 +923,48 @@ function saveCaretPosition(){
             }
             caretPosition = selection.focusOffset ?? 0;
         }
+        else {
+            cursorElement = undefined;
+            caretPosition = 0;
+        }
         console.log("Cursor element: ", cursorElement);
         console.log("Cursor position: ", caretPosition);
     }
-    else if (window.getSelection) {
+    else {
         cursorElement = undefined;
         caretPosition = 0;
+    }
+}
+
+function loadCaretPosition(){
+    if (cursorElement !== undefined && window.getSelection()){
+        const quoteTextGroup = document.getElementById("LyricCard").childNodes[1];
+        let sel = window.getSelection();
+        if (cursorElement === "infoText"){
+            let infoTextElement = quoteTextGroup.childNodes[2].childNodes[0];
+            let range = document.createRange();
+            range.setStart(infoTextElement.childNodes[0], caretPosition);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+        else if (cursorElement === "quoteChar"){
+            let quoteCharElement = quoteTextGroup.childNodes[1].childNodes[0];
+            let range = document.createRange();
+            range.setStart(quoteCharElement.childNodes[0], caretPosition);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+        else if (typeof cursorElement === 'number' && cursorElement < lines.length){
+            let lineElement = quoteTextGroup.childNodes[0].childNodes[2*cursorElement + 1];
+            console.log("lineElement: ", lineElement);
+            let range = document.createRange();
+            range.setStart(lineElement.childNodes[0], caretPosition);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
     }
 }
 
