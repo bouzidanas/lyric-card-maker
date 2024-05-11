@@ -85,6 +85,10 @@ let saveFile = false;                //Save SVG file? true -> yes, false -> no
 let filename = "Card";
 let loadFilename = filename + "_settings";
 
+//Cursor state
+let cursorElement = undefined;
+let caretPosition = 0;
+
 //----------------------------------------------------------------------------
 //Main
 
@@ -404,11 +408,7 @@ targetNode.onkeydown = (event) => {
 // Callback function to execute when mutations are observed
 function observerCallback(mutationList, observer){
     for (const mutation of mutationList) {
-        if (mutation.type === "childList") {
-            console.log("A child node has been added or removed.");
-        } else if (mutation.type === "attributes") {
-            console.log(`The ${mutation.attributeName} attribute was modified.`);
-        } else if (mutation.type === "characterData") {
+        if (mutation.type === "characterData") {
             console.log("The characterData was modified.");
             console.log(mutation.target.data);
             console.log(mutation.oldValue);
@@ -882,7 +882,11 @@ function createSVG(){
      and after generating the SVG.
 **/
 function rerenderSVG(){
-    //First remove current SVG (and other elements previously generated) that is to be replaced
+
+    //First save the caret position
+    saveCaretPosition();
+
+    //Next remove contents of SVG (and other elements previously generated) that is to be replaced
     let svgElement = document.getElementsByTagName("svg")[0];
     // empty contents of svgElement
     console.log(svgElement.children)
@@ -896,6 +900,33 @@ function rerenderSVG(){
 
     //Generated new SVG
     createSVG();
+}
+
+function saveCaretPosition(){
+    if (window.getSelection && window.getSelection().focusNode) {
+        const selection = window.getSelection();
+        const cNode = selection.focusNode;
+        const pNode = cNode.parentNode;
+        if (pNode.nodeName === 'text'){
+            const text = cNode.textContent;
+            if (lines.includes(text)){
+                cursorElement = lines.indexOf(text);
+            } else if (text === infoText){
+                cursorElement = "infoText";
+            } else if (text === quoteChar){
+                cursorElement = "quoteChar";
+            } else {
+                cursorElement = undefined;
+            }
+            caretPosition = selection.focusOffset ?? 0;
+        }
+        console.log("Cursor element: ", cursorElement);
+        console.log("Cursor position: ", caretPosition);
+    }
+    else if (window.getSelection) {
+        cursorElement = undefined;
+        caretPosition = 0;
+    }
 }
 
 function setFormPlaceholders(){
