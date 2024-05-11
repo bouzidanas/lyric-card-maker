@@ -901,14 +901,10 @@ function rerenderSVG(){
     //Next remove contents of SVG (and other elements previously generated) that is to be replaced
     let svgElement = document.getElementsByTagName("svg")[0];
     // empty contents of svgElement
-    console.log(svgElement.children)
     svgElement.innerHTML = '';
 
     // // remove svgElement
     // svgElement.remove();
-
-    //let bufspace = document.getElementsByClassName("end-buffer-space")[0];
-    //bufspace.remove();
 
     //Generated new SVG
     createSVG();
@@ -939,8 +935,6 @@ function saveCaretPosition(){
             cursorElement = undefined;
             caretPosition = 0;
         }
-        console.log("Cursor element: ", cursorElement);
-        console.log("Cursor position: ", caretPosition);
     }
     else {
         cursorElement = undefined;
@@ -949,6 +943,8 @@ function saveCaretPosition(){
 }
 
 function loadCaretPosition(){
+    //The following if statement uses elements according to the ASSUMED structure of the SVG.
+    //If the structure changes, this function will need to be updated!
     if (cursorElement !== undefined && window.getSelection()){
         const quoteTextGroup = document.getElementById("LyricCard").childNodes[1];
         let sel = window.getSelection();
