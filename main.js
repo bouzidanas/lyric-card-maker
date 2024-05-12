@@ -657,7 +657,7 @@ function createSVG(){
     const imageShadowFilter = canvas.filter(Snap.filter.shadow(imageShadowShiftX, imageShadowShiftY, imageShadowBlurAmount, imageShadowColor, parseFloat(shadowOpacity)));
 
     //Setting up SVG background color
-    const svgBackground = canvas.rect(0,0, width, height);
+    const svgBackground = canvas.rect(imagePositionX, imagePositionY, imageWidth, imageHeight);
     svgBackground.attr({fill: svgBackgroundColor});
 
     backgroundGroup.add(svgBackground);
@@ -677,16 +677,16 @@ function createSVG(){
         const backgroundBlurredImage = svgBlurredBackground ?? canvas.image(imageURL, (width - blurredWidth)/2, (height - blurredHeight)/2, blurredWidth, blurredHeight);
         backgroundBlurredImage.attr({filter: blurFilter});
 
-        var mask = svgMask ?? canvas.rect(0,0, width, height);
-        mask.attr({fill: imageMaskColor});
+        var mask = svgMask ?? canvas.rect(imagePositionX, imagePositionY, imageWidth, imageHeight);
+        mask.attr({fill: imageMaskColor, x: imagePositionX, y: imagePositionY, width: imageWidth, height: imageHeight});
         mask.attr({opacity: imageDarkMaskOpacity});
 
         let backgroundImage = svgBackgroundImage ?? canvas.image(imageURL, imagePositionX, imagePositionY, imageWidth, imageHeight);
+        backgroundImage.attr({x: imagePositionX, y: imagePositionY, width: imageWidth, height: imageHeight});
 
         if (imageShadowEffect){
             backgroundImage.attr({filter: imageShadowFilter});
         }
-
 
         svgBlurredBackground = backgroundBlurredImage;
         svgMask = mask;
@@ -695,9 +695,10 @@ function createSVG(){
     }
     else{
         let backgroundImage = svgBackgroundImage ?? canvas.image(imageURL, imagePositionX, imagePositionY, imageWidth, imageHeight);
+        backgroundImage.attr({x: imagePositionX, y: imagePositionY, width: imageWidth, height: imageHeight});
 
-        var mask = svgMask ?? canvas.rect(0,0, width, height);
-        mask.attr({fill: imageMaskColor});
+        var mask = svgMask ?? canvas.rect(imagePositionX, imagePositionY, imageWidth, imageHeight);
+        mask.attr({fill: imageMaskColor, x: imagePositionX, y: imagePositionY, width: imageWidth, height: imageHeight});
         mask.attr({opacity: imageDarkMaskOpacity});
 
         if(blurEffect){
@@ -708,6 +709,39 @@ function createSVG(){
         svgMask = mask;
         backgroundGroup.add(backgroundImage, mask);
     }
+
+    let backGroupDragStartX = 0;
+    let backGroupDragStartY = 0;
+    backgroundGroup.drag( 
+        function(dx, dy, posx, posy) { 
+            const backGroupEl = this;
+            console.log("original transform: ", this.data('origTransform'));
+            backGroupEl.transform(this.data('origTransform') + (this.data('origTransform') ? "T" : "t") + [dx, dy]);
+        },
+        function(posx, posy){
+            this.data('origTransform', this.transform().local);
+            backGroupDragStartX = this.getBBox().x;
+            backGroupDragStartY = this.getBBox().y;
+            console.log("Move started");
+        },
+        function(){
+            console.log("Move stopped");
+            // linesGroupElement = document.getElementById("linesGroup");
+            // console.log(linesGroupElement.getBBox().x);
+            const delX = this.getBBox().x - backGroupDragStartX;
+            const delY = this.getBBox().y - backGroupDragStartY;
+            if (delX === 0 && delY === 0){
+                cursorElement = 0;
+                caretPosition = 0;
+                loadCaretPosition();
+            }
+            else {
+                imagePositionX += delX;
+                imagePositionY += delY;
+            }
+            rerenderSVG();
+        }
+    );
 
     const quoteGroup = canvas.group();
     const linesGroup = canvas.group();
