@@ -712,34 +712,41 @@ function createSVG(){
 
     let backGroupDragStartX = 0;
     let backGroupDragStartY = 0;
+    let dragged = false;
     backgroundGroup.drag( 
         function(dx, dy, posx, posy) { 
-            const backGroupEl = this;
-            console.log("original transform: ", this.data('origTransform'));
-            backGroupEl.transform(this.data('origTransform') + (this.data('origTransform') ? "T" : "t") + [dx, dy]);
+            dragged = true;
+            if (cursorElement !== undefined || window.getSelection()?.focusNode?.parentNode?.nodeName === "text"){
+                const backGroupEl = this;
+                console.log("original transform: ", this.data('origTransform'));
+                backGroupEl.transform(this.data('origTransform') + (this.data('origTransform') ? "T" : "t") + [dx, dy]);
+            }
         },
         function(posx, posy){
-            this.data('origTransform', this.transform().local);
-            backGroupDragStartX = this.getBBox().x;
-            backGroupDragStartY = this.getBBox().y;
-            console.log("Move started");
+            dragged = false;
+            if (cursorElement !== undefined || window.getSelection()?.focusNode?.parentNode?.nodeName === "text"){
+                this.data('origTransform', this.transform().local);
+                backGroupDragStartX = this.getBBox().x;
+                backGroupDragStartY = this.getBBox().y;
+                console.log("Move started");
+            }
         },
         function(){
-            console.log("Move stopped");
-            // linesGroupElement = document.getElementById("linesGroup");
-            // console.log(linesGroupElement.getBBox().x);
-            const delX = this.getBBox().x - backGroupDragStartX;
-            const delY = this.getBBox().y - backGroupDragStartY;
-            if (delX === 0 && delY === 0){
+            if (cursorElement !== undefined || window.getSelection()?.focusNode?.parentNode?.nodeName === "text"){
+                console.log("Move stopped");
+                // linesGroupElement = document.getElementById("linesGroup");
+                // console.log(linesGroupElement.getBBox().x);
+                const delX = this.getBBox().x - backGroupDragStartX;
+                const delY = this.getBBox().y - backGroupDragStartY;
+                
+                imagePositionX += delX;
+                imagePositionY += delY;
+                rerenderSVG();
+            } else if (!dragged){
                 cursorElement = 0;
                 caretPosition = 0;
                 loadCaretPosition();
             }
-            else {
-                imagePositionX += delX;
-                imagePositionY += delY;
-            }
-            rerenderSVG();
         }
     );
 
