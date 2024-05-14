@@ -173,6 +173,10 @@ svg {
   border: 3px solid #333333;
 }
 
+#svg-container[contenteditable="true"]:focus #background-group:hover {
+  cursor: grab;
+}
+
 svg .drag-arrow {
   display: none;
 }

@@ -650,6 +650,7 @@ function createSVG(){
     // canvas.append( frag )
 
     const backgroundGroup = canvas.group();
+    backgroundGroup.attr({id: "background-group"});
 
     //Setting up blur and shadow effects
     const blurFilter = canvas.filter(Snap.filter.blur(blurAmount, blurAmount));
