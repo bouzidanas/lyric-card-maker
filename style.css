@@ -193,6 +193,20 @@ svg .drag-arrow {
   cursor: grab;
 }
 
+#svg-container[contenteditable="true"]:focus:hover rect.area:hover {
+  cursor: grab;
+}
+
+#svg-container[contenteditable="true"]:focus:hover g:hover > rect.footer-background,
+#svg-container[contenteditable="true"]:focus:hover g:hover > rect.char-background,
+#svg-container[contenteditable="true"]:focus:hover g:hover > rect.lines-background {
+  opacity: 0.05!important;
+}
+#svg-container[contenteditable="true"]:focus:hover rect.quote-background:hover {
+  opacity: 0.05!important;
+}
+
+
 ::placeholder {
   color: #bbbbbb;
 }

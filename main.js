@@ -798,26 +798,38 @@ function createSVG(){
     var lineGroupDragStartX = 0;
     var lineGroupDragStartY = 0;
 
-    linesDragArrowGroup.drag( 
+    linesBackgroundRect.drag( 
         function(dx, dy, posx, posy) { 
-            const quoteGroupEl = this.parent();
-            console.log("original transform: ", this.data('origTransform'));
-            quoteGroupEl.transform(this.data('origTransform') + (this.data('origTransform') ? "T" : "t") + [dx, dy]);
+            dragged = true;
+            if (cursorElement !== undefined || window.getSelection()?.focusNode?.parentNode?.nodeName === "text"){
+                const quoteGroupEl = this.parent();
+                console.log("original transform: ", this.data('origTransform'));
+                quoteGroupEl.transform(this.data('origTransform') + (this.data('origTransform') ? "T" : "t") + [dx, dy]);
+            }
         },
         function(posx, posy){
-            this.data('origTransform', this.transform().local);
-            lineGroupDragStartX = this.parent().getBBox().x;
-            lineGroupDragStartY = this.parent().getBBox().y;
-            console.log("Move started");
+            dragged = false;
+            if (cursorElement !== undefined || window.getSelection()?.focusNode?.parentNode?.nodeName === "text"){
+                this.data('origTransform', this.transform().local);
+                lineGroupDragStartX = this.parent().getBBox().x;
+                lineGroupDragStartY = this.parent().getBBox().y;
+                console.log("Move started");
+            }
         },
         function(){
-            console.log("Move stopped");
-            // linesGroupElement = document.getElementById("linesGroup");
-            // console.log(linesGroupElement.getBBox().x);
-            console.log(this.parent());
-            quotePositionX += this.parent().getBBox().x - lineGroupDragStartX;
-            quotePositionY += this.parent().getBBox().y - lineGroupDragStartY;
-            rerenderSVG();
+            if (cursorElement !== undefined || window.getSelection()?.focusNode?.parentNode?.nodeName === "text"){
+                console.log("Move stopped");
+                // linesGroupElement = document.getElementById("linesGroup");
+                // console.log(linesGroupElement.getBBox().x);
+                console.log(this.parent());
+                quotePositionX += this.parent().getBBox().x - lineGroupDragStartX;
+                quotePositionY += this.parent().getBBox().y - lineGroupDragStartY;
+                rerenderSVG();
+            } else if (!dragged){
+                cursorElement = 0;
+                caretPosition = 0;
+                loadCaretPosition();
+            }
         }
     );
 
@@ -847,26 +859,38 @@ function createSVG(){
     quoteCharBackgroundRect.attr({class: "char-background area", opacity: 0});
     quoteCharGroup.prepend(quoteCharBackgroundRect);
 
-    charDragArrowGroup.drag( 
+    quoteCharBackgroundRect.drag( 
         function(dx, dy, posx, posy) { 
-            const quoteCharGroupEl = this.parent();
-            console.log("original transform: ", this.data('origTransform'));
-            quoteCharGroupEl.transform(this.data('origTransform') + (this.data('origTransform') ? "T" : "t") + [dx, dy]);
+            dragged = true;
+            if (cursorElement !== undefined || window.getSelection()?.focusNode?.parentNode?.nodeName === "text"){
+                const quoteCharGroupEl = this.parent();
+                console.log("original transform: ", this.data('origTransform'));
+                quoteCharGroupEl.transform(this.data('origTransform') + (this.data('origTransform') ? "T" : "t") + [dx, dy]);
+            }
         },
         function(posx, posy){
-            this.data('origTransform', this.transform().local);
-            lineGroupDragStartX = this.parent().getBBox().x;
-            lineGroupDragStartY = this.parent().getBBox().y;
-            console.log("Move started");
+            dragged = false;
+            if (cursorElement !== undefined || window.getSelection()?.focusNode?.parentNode?.nodeName === "text"){
+                this.data('origTransform', this.transform().local);
+                lineGroupDragStartX = this.parent().getBBox().x;
+                lineGroupDragStartY = this.parent().getBBox().y;
+                console.log("Move started");
+            }
         },
         function(){
-            console.log("Move stopped");
-            // linesGroupElement = document.getElementById("linesGroup");
-            // console.log(linesGroupElement.getBBox().x);
-            console.log(this.parent());
-            quoteCharPositionX += this.parent().getBBox().x - lineGroupDragStartX;
-            quoteCharPositionY += this.parent().getBBox().y - lineGroupDragStartY;
-            rerenderSVG();
+            if (cursorElement !== undefined || window.getSelection()?.focusNode?.parentNode?.nodeName === "text"){
+                console.log("Move stopped");
+                // linesGroupElement = document.getElementById("linesGroup");
+                // console.log(linesGroupElement.getBBox().x);
+                console.log(this.parent());
+                quoteCharPositionX += this.parent().getBBox().x - lineGroupDragStartX;
+                quoteCharPositionY += this.parent().getBBox().y - lineGroupDragStartY;
+                rerenderSVG();
+            } else if (!dragged){
+                cursorElement = 0;
+                caretPosition = 0;
+                loadCaretPosition();
+            }
         }
     );
 
@@ -903,26 +927,38 @@ function createSVG(){
     footerBackgroundRect.attr({class: "footer-background area", opacity: 0});
     footerGroup.prepend(footerBackgroundRect);
 
-    infoDragArrowGroup.drag( 
+    footerBackgroundRect.drag( 
         function(dx, dy, posx, posy) { 
-            const infoGroupEl = this.parent();
-            console.log("original transform: ", this.data('origTransform'));
-            infoGroupEl.transform(this.data('origTransform') + (this.data('origTransform') ? "T" : "t") + [dx, dy]);
+            dragged = true;
+            if (cursorElement !== undefined || window.getSelection()?.focusNode?.parentNode?.nodeName === "text"){
+                const infoGroupEl = this.parent();
+                console.log("original transform: ", this.data('origTransform'));
+                infoGroupEl.transform(this.data('origTransform') + (this.data('origTransform') ? "T" : "t") + [dx, dy]);
+            }
         },
         function(posx, posy){
-            this.data('origTransform', this.transform().local);
-            lineGroupDragStartX = this.parent().getBBox().x;
-            lineGroupDragStartY = this.parent().getBBox().y;
-            console.log("Move started");
+            dragged = false;
+            if (cursorElement !== undefined || window.getSelection()?.focusNode?.parentNode?.nodeName === "text"){
+                this.data('origTransform', this.transform().local);
+                lineGroupDragStartX = this.parent().getBBox().x;
+                lineGroupDragStartY = this.parent().getBBox().y;
+                console.log("Move started");
+            }
         },
         function(){
-            console.log("Move stopped");
-            // linesGroupElement = document.getElementById("linesGroup");
-            // console.log(linesGroupElement.getBBox().x);
-            console.log(this.parent());
-            infoPositionX += this.parent().getBBox().x - lineGroupDragStartX;
-            infoPositionY += this.parent().getBBox().y - lineGroupDragStartY;
-            rerenderSVG();
+            if (cursorElement !== undefined || window.getSelection()?.focusNode?.parentNode?.nodeName === "text"){
+                console.log("Move stopped");
+                // linesGroupElement = document.getElementById("linesGroup");
+                // console.log(linesGroupElement.getBBox().x);
+                console.log(this.parent());
+                infoPositionX += this.parent().getBBox().x - lineGroupDragStartX;
+                infoPositionY += this.parent().getBBox().y - lineGroupDragStartY;
+                rerenderSVG();
+            } else if (!dragged){
+                cursorElement = 0;
+                caretPosition = 0;
+                loadCaretPosition();
+            }
         }
     );
 
@@ -946,34 +982,79 @@ function createSVG(){
     quoteBackgroundRect.attr({class: "quote-background area", opacity: 0});
     quoteGroup.prepend(quoteBackgroundRect);
 
-    quoteDragArrowGroup.drag( 
+    quoteBackgroundRect.drag( 
         function(dx, dy, posx, posy) { 
-            const quoteGroupEl = this.parent();
-            console.log("original transform: ", this.data('origTransform'));
-            quoteGroupEl.transform(this.data('origTransform') + (this.data('origTransform') ? "T" : "t") + [dx, dy]);
+            dragged = true;
+            if (cursorElement !== undefined || window.getSelection()?.focusNode?.parentNode?.nodeName === "text"){
+                const quoteGroupEl = this.parent();
+                console.log("original transform: ", this.data('origTransform'));
+                quoteGroupEl.transform(this.data('origTransform') + (this.data('origTransform') ? "T" : "t") + [dx, dy]);
+            }
         },
         function(posx, posy){
-            this.data('origTransform', this.transform().local);
-            lineGroupDragStartX = this.parent().getBBox().x;
-            lineGroupDragStartY = this.parent().getBBox().y;
-            console.log("Move started");
+            dragged = false;
+            if (cursorElement !== undefined || window.getSelection()?.focusNode?.parentNode?.nodeName === "text"){
+                this.data('origTransform', this.transform().local);
+                lineGroupDragStartX = this.parent().getBBox().x;
+                lineGroupDragStartY = this.parent().getBBox().y;
+                console.log("Move started");
+            }
         },
         function(){
-            console.log("Move stopped");
-            // linesGroupElement = document.getElementById("linesGroup");
-            // console.log(linesGroupElement.getBBox().x);
-            console.log(this.parent());
-            const delX = this.parent().getBBox().x - lineGroupDragStartX;
-            const delY = this.parent().getBBox().y - lineGroupDragStartY;
-            quotePositionX += delX;
-            quotePositionY += delY;
-            quoteCharPositionX += delX;
-            quoteCharPositionY += delY;
-            infoPositionX += delX;
-            infoPositionY += delY;
-            rerenderSVG();
+            if (cursorElement !== undefined || window.getSelection()?.focusNode?.parentNode?.nodeName === "text"){
+                console.log("Move stopped");
+                // linesGroupElement = document.getElementById("linesGroup");
+                // console.log(linesGroupElement.getBBox().x);
+                console.log(this.parent());
+                const delX = this.parent().getBBox().x - lineGroupDragStartX;
+                const delY = this.parent().getBBox().y - lineGroupDragStartY;
+                quotePositionX += delX;
+                quotePositionY += delY;
+                quoteCharPositionX += delX;
+                quoteCharPositionY += delY;
+                infoPositionX += delX;
+                infoPositionY += delY;
+                rerenderSVG();
+            } else if (!dragged){
+                cursorElement = 0;
+                caretPosition = 0;
+                loadCaretPosition();
+            }
         }
     );
+
+    // quoteDragArrowGroup.drag( 
+    //     function(dx, dy, posx, posy) { 
+    //         const quoteGroupEl = this.parent();
+    //         const scaleX = 1 + (dx / quoteGroupEl.getBBox().width);
+    //         const scaleY = 1 + (dy / quoteGroupEl.getBBox().height);
+    //         const scale = dx*dx > dy*dy ? scaleX : scaleY;
+    //         console.log("scaleX: ", scaleX);
+    //         console.log("original transform: ", this.data('origTransform'));
+    //         quoteGroupEl.transform(this.data('origTransform') + (this.data('origTransform') ? "S" : "s") + scale.toFixed(2));
+    //     },
+    //     function(posx, posy){
+    //         this.data('origTransform', this.transform().local);
+    //         lineGroupDragStartX = this.parent().getBBox().x;
+    //         lineGroupDragStartY = this.parent().getBBox().y;
+    //         console.log("Move started");
+    //     },
+    //     function(){
+    //         console.log("Move stopped");
+    //         // linesGroupElement = document.getElementById("linesGroup");
+    //         // console.log(linesGroupElement.getBBox().x);
+    //         console.log(this.parent());
+    //         const delX = this.parent().getBBox().x - lineGroupDragStartX;
+    //         const delY = this.parent().getBBox().y - lineGroupDragStartY;
+    //         quotePositionX += delX;
+    //         quotePositionY += delY;
+    //         quoteCharPositionX += delX;
+    //         quoteCharPositionY += delY;
+    //         infoPositionX += delX;
+    //         infoPositionY += delY;
+    //         rerenderSVG();
+    //     }
+    // );
 
     //Saving SVG file
     if(saveFile){
