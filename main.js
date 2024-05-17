@@ -675,14 +675,14 @@ function createSVG(){
             blurredHeight = height + 2*blurAmount;
             blurredWidth = blurredHeight*imageRatio;
         }
-        const backgroundBlurredImage = svgBlurredBackground ?? canvas.image(imageURL, (width - blurredWidth)/2, (height - blurredHeight)/2, blurredWidth, blurredHeight);
+        const backgroundBlurredImage = svgBlurredBackground && svgBlurredBackground.attr("href") === imageURL ? svgBlurredBackground : canvas.image(imageURL, (width - blurredWidth)/2, (height - blurredHeight)/2, blurredWidth, blurredHeight);
         backgroundBlurredImage.attr({filter: blurFilter});
 
         var mask = svgMask ?? canvas.rect(imagePositionX, imagePositionY, imageWidth, imageHeight);
         mask.attr({fill: imageMaskColor, x: imagePositionX, y: imagePositionY, width: imageWidth, height: imageHeight});
         mask.attr({opacity: imageDarkMaskOpacity});
 
-        let backgroundImage = svgBackgroundImage ?? canvas.image(imageURL, imagePositionX, imagePositionY, imageWidth, imageHeight);
+        let backgroundImage = svgBackgroundImage && svgBackgroundImage.attr("href") === imageURL ? svgBackgroundImage : canvas.image(imageURL, imagePositionX, imagePositionY, imageWidth, imageHeight);
         backgroundImage.attr({x: imagePositionX, y: imagePositionY, width: imageWidth, height: imageHeight});
 
         if (imageShadowEffect){
@@ -695,7 +695,7 @@ function createSVG(){
         backgroundGroup.add(backgroundBlurredImage, mask, backgroundImage);
     }
     else{
-        let backgroundImage = svgBackgroundImage ?? canvas.image(imageURL, imagePositionX, imagePositionY, imageWidth, imageHeight);
+        let backgroundImage = svgBackgroundImage && svgBackgroundImage.attr("href") === imageURL ? svgBackgroundImage : canvas.image(imageURL, imagePositionX, imagePositionY, imageWidth, imageHeight);
         backgroundImage.attr({x: imagePositionX, y: imagePositionY, width: imageWidth, height: imageHeight});
 
         var mask = svgMask ?? canvas.rect(imagePositionX, imagePositionY, imageWidth, imageHeight);
