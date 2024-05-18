@@ -495,6 +495,8 @@ function saveSVGParameters(){
         ["glyph-font-family", quoteCharacterFontFamily],
         ["glyph-shift-X", quoteCharacterShiftX],
         ["glyph-shift-Y", quoteCharacterShiftY],
+        ["glyph-position-X", quoteCharPositionX],
+        ["glyph-position-Y", quoteCharPositionY],
         ["glyph-size", quoteCharacterSize],
         ["image-url", imageURL],
         ["image-position-X", imagePositionX],
@@ -502,12 +504,15 @@ function saveSVGParameters(){
         ["image-width", imageWidth],
         ["image-height", imageHeight],
         ["info-padding", infoPaddingFromBottom],
+        ["info-position-X", infoPositionX],
+        ["info-position-Y", infoPositionY],
         ["info-size", infoFontSize],
         ["info-weight", infoFontWeight],
         ["lines", encodeURIComponent(lines.join('\\'))],
         ["line-padding-X", linePaddingX],
         ["line-padding-Y", linePaddingY],
         ["line-separation", lineSeparation],
+        ["quote-character", quoteChar],
         ["quote-box-opacity", quoteBackgroundOpacity],
         ["quote-color", encodeURIComponent(quoteBackgroundColor)],
         ["quote-position-X", quotePositionX],
@@ -630,11 +635,11 @@ function setParameters(obj){
     quoteShadowShiftX = parseInt(obj["quote-shadow-shift-X"]);
     quoteShadowShiftY = parseInt(obj["quote-shadow-shift-Y"]);
     quoteShadowColor = obj["quote-shadow-color"];
-
-    quoteCharPositionX = quotePositionX + quoteCharacterShiftX;
-    quoteCharPositionY = quotePositionY + quoteCharacterShiftY;
-    infoPositionX = quotePositionX + infoShiftX;
-    infoPositionY = height - infoPaddingFromBottom;
+    quoteChar = obj["quote-character"];
+    quoteCharPositionX = parseInt(obj["glyph-position-X"]);
+    quoteCharPositionY = parseInt(obj["glyph-position-Y"]);
+    infoPositionX = parseInt(obj["info-position-X"]);
+    infoPositionY = parseInt(obj["info-position-Y"]);
 }
 
 //The following function Constructs the SVG
