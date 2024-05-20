@@ -399,7 +399,10 @@ const observer = new MutationObserver(observerCallback);
 
 // Start observing the target node for configured mutations
 targetNode.onfocus = () => observer.observe(targetNode, config);
-targetNode.onblur = () => observer.disconnect();
+targetNode.onblur = () => {
+    observer.disconnect();
+    cursorElement = undefined;
+}
 targetNode.onkeydown = (event) => {
     //check if backspace was pressed
     if(window.getSelection() && window.getSelection().focusNode){
@@ -558,6 +561,16 @@ function downloadSVG(){
     const element = document.createElement("a");
 
     //Remove area backgrounds from svg before downloading
+    const dragArrows = document.querySelectorAll("g.drag-arrow");
+    dragArrows.forEach((arrow) => {
+        arrow.remove();
+    });
+
+    //Remove area backgrounds from svg before downloading
+    const areas = document.querySelectorAll("rect.area");
+    areas.forEach((area) => {
+        area.remove();
+    });
 
     let svgString = new XMLSerializer().serializeToString(document.querySelector('svg'));
 
@@ -572,6 +585,7 @@ function downloadSVG(){
     document.body.appendChild(element);
     element.click();
     canvas.remove();
+    rerenderSVG();
 }
 
 function setImageParameters(url, setDimensions) {
@@ -650,10 +664,6 @@ function createSVG(){
     // var canvas = Snap(width, height);
     // canvas.attr({id: "LyricCard"});
 
-    // //Adding nice google fonts for later use
-    // var frag = Snap.parse('<style>@import url("https://fonts.googleapis.com/css2?family=Varela+Round");@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900");</style>')
-    // canvas.append( frag )
-
     const backgroundGroup = canvas.group();
     backgroundGroup.attr({id: "background-group"});
 
@@ -719,7 +729,7 @@ function createSVG(){
     let dragged = false;
     backgroundGroup.drag( 
         function(dx, dy, posx, posy) { 
-            dragged = true;
+            dragged = dx*dx + dy*dy > 2;
             if (cursorElement !== undefined || window.getSelection()?.focusNode?.parentNode?.nodeName === "text"){
                 const backGroupEl = this;
                 console.log("original transform: ", this.data('origTransform'));
@@ -736,6 +746,8 @@ function createSVG(){
             }
         },
         function(){
+            console.log("cursorElement: ", cursorElement);
+            console.log("parentNode: ", window.getSelection()?.focusNode?.parentNode?.nodeName);
             if (cursorElement !== undefined || window.getSelection()?.focusNode?.parentNode?.nodeName === "text"){
                 console.log("Move stopped");
                 // linesGroupElement = document.getElementById("linesGroup");
@@ -1026,6 +1038,10 @@ function createSVG(){
         }
     );
 
+    //Adding nice google fonts for later use
+    const fonts = Snap.parse('<style>@import url("https://fonts.googleapis.com/css2?family=Varela+Round");@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900");</style>');
+    canvas.append(fonts);
+
     // quoteDragArrowGroup.drag( 
     //     function(dx, dy, posx, posy) { 
     //         const quoteGroupEl = this.parent();
@@ -1058,11 +1074,6 @@ function createSVG(){
     //         rerenderSVG();
     //     }
     // );
-
-    //Saving SVG file
-    if(saveFile){
-        downloadSVG();
-    }
 
     //let bufferSpace = document.createElement('div');
     //bufferSpace.className = 'end-buffer-space';

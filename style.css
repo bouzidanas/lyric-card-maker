@@ -159,8 +159,12 @@ form {
   margin-left: 40px;
 }
 
-#svg-container {
+#content {
   margin: 55px auto;
+}
+
+#svg-container {
+  margin: 0 0;
 }
 
 #svg-container[contenteditable="true"]:focus {
@@ -168,7 +172,7 @@ form {
 }
 
 svg {
-  margin: 25px 25px 20px 25px;
+  margin: 25px 25px 22px 25px;
   overflow: hidden;
   border: 3px solid #333333;
 }
