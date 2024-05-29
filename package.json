@@ -10,5 +10,8 @@
   },
   "devDependencies": {
     "vite": "^5.2.0"
+  },
+  "dependencies": {
+    "fontfaceobserver": "^2.3.0"
   }
 }

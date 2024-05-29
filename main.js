@@ -1,3 +1,4 @@
+import FontFaceObserver from 'fontfaceobserver';
 import './style.css';
 
 //----------------------------------------------------------------------------
@@ -92,6 +93,8 @@ let caretPosition = 0;
 //App state history
 let appState = [];
 let appStateIndex = 0;
+let fontList = ["Varela Round", "Nunito Sans"];
+let fontCSSUrlList = ["https://fonts.googleapis.com/css2?family=Varela+Round:wght@400&display=swap", "https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900"];
 
 //----------------------------------------------------------------------------
 //Main
@@ -386,8 +389,9 @@ console.log(document.fonts.keys());
 setFormPlaceholders();
 
 createSVG();
-setTimeout(() => rerenderSVG(), 40);
-//   setTimeout(() => document.body.style.opacity = 1, 800);
+loadWebFonts();
+// setTimeout(() => rerenderSVG(), 40);
+// setTimeout(() => document.body.style.opacity = 1, 800);
 
 // Select the node that will be observed for mutations
 const targetNode = document.getElementById("svg-container");
@@ -654,6 +658,8 @@ function setParameters(obj){
     quoteCharPositionY = parseInt(obj["glyph-position-Y"]);
     infoPositionX = parseInt(obj["info-position-X"]);
     infoPositionY = parseInt(obj["info-position-Y"]);
+
+    loadWebFonts();
 }
 
 //The following function Constructs the SVG
@@ -1039,7 +1045,7 @@ function createSVG(){
     );
 
     //Adding nice google fonts for later use
-    const fonts = Snap.parse('<style>@import url("https://fonts.googleapis.com/css2?family=Varela+Round");@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900");</style>');
+    const fonts = Snap.parse('<style>' + fontCSSUrlList.map(url => '@import url("' + url + '");').join('') + '</style>');
     canvas.append(fonts);
 
     // quoteDragArrowGroup.drag( 
@@ -1217,24 +1223,24 @@ function setFormPlaceholders(){
         linesPlaceholder += lines[step];
     }
     document.getElementsByName("lines")[0].placeholder = linesPlaceholder;
-
+    
     //Text section
     document.getElementsByName("font-family")[0].placeholder = fontFamilyCustom;
     document.getElementsByName("font-size")[0].placeholder = fontSizeCustom;
     document.getElementsByName("font-color")[0].placeholder = fontColor;
-
+    
     document.getElementsByName("font-family")[0].defaultValue = fontFamilyCustom;
     document.getElementsByName("font-size")[0].defaultValue = fontSizeCustom;
     document.getElementsByName("font-color")[0].defaultValue = fontColor;
-
+    
     //Footer
     document.getElementsByName("info-padding")[0].placeholder = height - infoPositionY;
     document.getElementsByName("info-size")[0].placeholder = infoFontSize;
     document.getElementsByName("footer-text")[0].placeholder = infoText;
-
+    
     document.getElementsByName("info-padding")[0].defaultValue = height - infoPositionY;
     document.getElementsByName("info-size")[0].defaultValue = infoFontSize;
-
+    
     //Advanced section
     document.getElementsByName("glyph-size")[0].placeholder = quoteCharacterSize;
     document.getElementsByName("info-weight")[0].placeholder = infoFontWeight;
@@ -1260,7 +1266,8 @@ function setFormPlaceholders(){
     document.getElementsByName("image-shadow-shift-Y")[0].placeholder = imageShadowShiftY;
     document.getElementsByName("image-shadow-blur-amount")[0].placeholder = imageShadowBlurAmount;
     document.getElementsByName("image-shadow-color")[0].placeholder = imageShadowColor;
-
+    
+    document.getElementsByName("lines")[0].defaultValue = linesPlaceholder;
     document.getElementsByName("glyph-size")[0].defaultValue = quoteCharacterSize;
     document.getElementsByName("info-weight")[0].defaultValue = infoFontWeight;
     document.getElementsByName("font-weight")[0].defaultValue = fontWeightCustom;
@@ -1275,6 +1282,7 @@ function setFormPlaceholders(){
     document.getElementsByName("blurred-back-clone-effect")[0].defaultChecked = blurCloneEffect;
     document.getElementsByName("blur-amount")[0].defaultValue = blurAmount;
     document.getElementsByName("glyph-color")[0].defaultValue = quoteCharacterColor;
+    document.getElementsByName("footer-text")[0].defaultValue = infoText;
     document.getElementsByName("footer-color")[0].defaultValue = infoTextColor;
     document.getElementsByName("footer-font-family")[0].defaultValue = infoFontFamily;
     document.getElementsByName("glyph-font-family")[0].defaultValue = quoteCharacterFontFamily;
@@ -1288,7 +1296,7 @@ function setFormPlaceholders(){
     document.getElementsByName("image-shadow-shift-Y")[0].defaultValue = imageShadowShiftY;
     document.getElementsByName("image-shadow-blur-amount")[0].defaultValue = imageShadowBlurAmount;
     document.getElementsByName("image-shadow-color")[0].defaultValue = imageShadowColor;
-
+    
 
     //Save
     document.getElementsByName("save-filename")[0].placeholder = filename;
@@ -1299,6 +1307,7 @@ function update(e){
     if(e.keyCode === 13){
         e.preventDefault(); // Otherwise the form will be submitted
 
+        let rerender = true;
         //Responding to input from Save section
         console.log(e.target)
         const saveForm = document.getElementById('save-form');
@@ -1346,7 +1355,6 @@ function update(e){
                     }
                     else if (key == "image-height"){
                         imageHeight = parseInt(value);
-                        console.log("entered image");
                     }
             }
         }
@@ -1390,12 +1398,16 @@ function update(e){
                     }
                     else if (key == "font-family"){
                         fontFamilyCustom = value;
+                        if (!fontList.includes(value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '))){
+                            loadWebFont(value);
+                            rerender = false;
+                        }
                     }
                     else if (key == "font-size"){
                         fontSizeCustom = parseInt(value);
                     }
 
-                    rerenderSVG();     // rerendering SVG because of bug where boxes are not resized correctly (to fit new text size) on first render.
+                    rerender && rerenderSVG();     // rerendering SVG because of bug where boxes are not resized correctly (to fit new text size) on first render.
             }
         }
 
@@ -1468,9 +1480,17 @@ function update(e){
                     }
                     else if (key == "glyph-font-family"){
                         quoteCharacterFontFamily = value;
+                        if (!fontList.includes(value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '))){
+                            loadWebFont(value);
+                            rerender = false;
+                        }
                     }
                     else if (key == "footer-font-family"){
                         infoFontFamily = value;
+                        if (!fontList.includes(value.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '))){
+                            loadWebFont(value);
+                            rerender = false;
+                        }
                     }
                     else if (key == "footer-shift-X"){
                         infoShiftX = parseInt(value);
@@ -1510,7 +1530,7 @@ function update(e){
         }
 
         console.log("FORM WAS SUBMITTED");
-        rerenderSVG();
+        rerender && rerenderSVG();
     }
     else {
         console.log("keyCode: " + e.keyCode);
@@ -1518,7 +1538,75 @@ function update(e){
 }
 
 //WebFont loading function
+function loadWebFont(fontFamily){
+    // make sure first letter of each word in font family is capitalized
+    fontFamily = fontFamily.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('+');
 
+    const api_key = import.meta.env.VITE_GOOGLE_FONT_API_KEY;
+    // fetch to google fonts api json data
+    const font_url = 'https://www.googleapis.com/webfonts/v1/webfonts?capability=VF&key=' + api_key + '&family=' + fontFamily;
+    const font_json = api_key && fetch(font_url).then(response => response.json()
+    ).then(data => {
+        console.log("data: ", data);
+        let css_font_url = 'https://fonts.googleapis.com/css2?family=' + fontFamily;
+        const font = data.items[0];
+
+        //check if font has axis key
+        if (font.hasOwnProperty('axes') && font.axes.length > 0) {
+            css_font_url += ':wght@' + font.axes[0].start + '..' + font.axes[0].end;
+        }
+        else if ( font.variants.length > 0 ) {
+            css_font_url += ':wght@';
+            css_font_url += font.variants.filter(variant => !variant.includes('italic')).join(';').replace(/regular/g, '400');
+        }
+        css_font_url += '&display=swap';
+        
+        if (!fontCSSUrlList.includes(css_font_url)){
+            // document.head.innerHTML += '<link rel="stylesheet" href="' + css_font_url + '">';
+            fontCSSUrlList.push(css_font_url);
+            fontList.push(fontFamily.replace('+', ' '));
+
+            var style = document.createElement('style');
+            style.textContent = '@import url("' + css_font_url + '")';
+
+            var newFont = new FontFaceObserver(fontFamily.replace('+', ' '));
+
+            newFont.load().then(function () {
+                rerenderSVG();
+                // setTimeout(() => rerenderSVG(), 30);
+            }, function () {
+                rerenderSVG();
+            });
+            
+            // var fi = setInterval(function() {
+            //     console.log("status: ", document.fonts.status);
+            //     if (document.fonts.check('12px ' + fontFamily.replace('+', ' '))) {
+            //         console.log('font loaded');
+            //         rerenderSVG();
+            //         clearInterval(fi);
+            //     }
+
+            // try {
+            //     style.sheet.cssRules; // <--- MAGIC: only populated when file is loaded
+            //     console.log(style.sheet.cssRules);
+            //     setTimeout(() => {
+            //         rerenderSVG();
+            //         console.log(style.sheet.cssRules);
+            //     }, 50);
+            //     clearInterval(fi);
+            // } catch (e){}
+            // }, 20);  
+
+            document.getElementsByTagName('head')[0].appendChild(style);
+        }
+    });
+}
+
+function loadWebFonts(){
+    loadWebFont(fontFamilyCustom);
+    loadWebFont(quoteCharacterFontFamily);
+    loadWebFont(infoFontFamily);
+}
 
 //Add current app state to state history
 function addState(){
